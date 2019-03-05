@@ -1,11 +1,11 @@
-pdf: thesis.tex 
+pdf:
 	xelatex thesis
 	# makeindex -s nomencl.ist -o thesis.nls thesis.nlo
 	bibtex thesis
 	bibtex thesis
 	xelatex thesis
 	xelatex thesis
-cls: nudtpaper.dtx nudtpaper.ins
+cls:
 	xelatex nudtpaper.ins
 	xelatex nudtpaper.dtx
 	makeindex -s gind nudtpaper
