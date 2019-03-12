@@ -7,7 +7,7 @@
 *.ilg
 *.ind
 *.out
-*.pdf
+
 *.toc
 *.bbl
 *.lof
