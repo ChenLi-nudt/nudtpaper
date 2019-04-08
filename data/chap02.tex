@@ -194,24 +194,77 @@ GPU计算应用程序是从CPU上开始执行。
 %在下一节中，我们将查看程序集级别的执行模型。我们的讨论并没有详述GPU编程模型的性能方面。
 然而，Seo等人观察到一个现象，在OpenCL上针对一个体系结构（例如，GPU）仔细优化过的代码可能在另一个体系结构（例如，CPU）上执行效果非常不好~\cite{seo2011performance}。
 
-图xxx提供了用于CPU实现一个大家熟知的操作，即单精度标量值A乘以矢量值X加矢量值Y的的C代码，称为SAXPY。 
+图~\ref{fig:ipe}提供了用于CPU实现一个大家熟知的操作，即单精度标量值A乘以矢量值X加矢量值Y的的C代码，称为SAXPY。 
 SAXPY是众所周知的基本线性代数软件库（BLAS）的一部分，可用于实现更高级别的矩阵运算，如高斯消元法。 
 鉴于其简单性和实用性，它经常被用作教授计算机体系结构的示例。
 
-图xxx中的示例演示了SAXPY的C代码形式。
+\begin{figure}[htbp] 
+  \centering
+  \begin{lstlisting}[language={[ANSI]C}]
+void saxpy_serial(int n, float a, float *x, float *y)
+{
+    for (int i = 0; i < n; ++i)
+        y[i] = a*x[i] + y[i];
+}
+
+main() 
+{
+    float *x, *y;
+    int n;
+    // `忽略初始化`x`和`y`的操作`
+    saxpy_serial(n, 2.0, x, y); //`调用串行计算`SAXPY`函数`
+    // `忽略释放`x`和`y`的操作`
+}
+\end{lstlisting} 
+\caption{C代码版本的SAXPY计算}
+\label{fig:csaxpy}
+\end{figure}
+
+
+\begin{figure}[htbp]
+\centering
+\begin{lstlisting}[language={[ANSI]C}]
+__global__ void saxpy(int n, float a, float *x, float *y)
+{
+    int i = blockIdx.x*blockDim.x + threadIdx.x;
+    if(i<n)
+        y[i] = a*x[i] + y[i];
+}
+int main() {
+    float *h_x, *h_y;
+    int n;
+    //`忽略给`h_x`和`h_y`在`CPU`分配空间和初始化的代码部分`
+    float *d_x, *d_y;
+    int nblocks = (n + 255) / 256;
+    cudaMalloc( &d_x, n * sizeof(float) );
+    cudaMalloc( &d_y, n * sizeof(float) );
+    cudaMemcpy( d_x, h_x, n * sizeof(float), cudaMemcpyHostToDevice );
+    cudaMemcpy( d_y, h_y, n * sizeof(float), cudaMemcpyHostToDevice );
+    saxpy<<<nblocks, 256>>>(n, 2.0, d_x, d_y); //`调用并行计算`SAXPY`的`GPU`内核函数`
+    cudaMemcpy( h_x, d_x, n * sizeof(float), cudaMemcpyDeviceToHost );
+    //`忽略为`h_x`、`h_y`、`d_x`和`d_y`释放空间的代码部分`
+}
+\end{lstlisting} 
+\caption{CUDA代码版本的SAXPY计算}
+\label{fig:cudasaxpy}
+\end{figure}
+
+
+
+图~\ref{fig:csaxpy}中的示例演示了SAXPY的C代码形式。
 代码函数\texttt{main()}开始执行执行。 为了使例子专注于计算过程，我们暂时省略分配和初始化数组x和y的细节。 
-接下来，调用函数\texttt{saxpy_serial}。 
+接下来，调用函数\texttt{saxpy\_serial}。 
 此函数将参数n中向量x和y中的元素数量，参数a中的标量值以及用于表示向量x和y的数组的指针作为输入参数。 
 该函数迭代数组x和y的每个元素。 
 在每次迭代中，第4行的代码使用循环变量i读取值x[i]和y[i]，将x[i]乘以a然后加y[i]，然后用结果更新到x[i]。
  
-图xxx则提供了相应的SAXPY的CUDA版本，可以在CPU和GPU之间分别执行相应部分的代码。
-与传统的C或C++应用程序类似，图yyy中的代码通过在CPU上运行\texttt{main()}函数开始执行。 
+图~\ref{fig:cudasaxpy}则提供了相应的SAXPY的CUDA版本，可以在CPU和GPU之间分别执行相应部分的代码。
+与传统的C或C++应用程序类似，图~\ref{fig:cudasaxpy}中的代码通过在CPU上运行\texttt{main()}函数开始执行。 
 我们将重点放在GPU部分执行的代码。
 在GPU上执行的线程是由函数指定的计算内核函数（kernel）的一部分。 
-在SAXPY的CUDA版本中，如图yyy所示，第1行的CUDA关键字\texttt{__global__}表示内核函数saxpy将在GPU上运行。 
-在该示例中，我们已经并行化了图xxxCPU示例中中的\texttt{for}循环。 
-具体来说，图xxx中原始CPU专用C代码中第4行\texttt{for}循环的每次迭代都被转换为运行图yyy中第3-5行代码的每个独立线程。
+在SAXPY的CUDA版本中，如图~\ref{fig:cudasaxpy}所示，第1行的CUDA关键字\texttt{\_\_global\_\_}表示内核函数saxpy将在GPU上运行。 
+在该示例中，我们已经并行化了图~\ref{fig:csaxpy}中CPU示例的\texttt{for}循环。 
+具体来说，图~\ref{fig:csaxpy}中原始CPU专用C代码中第4行\texttt{for}循环的每次迭代都被转换为运行图~\ref{fig:csaxpy}中第3-5行代码的每个独立线程。
 
 在我们的示例中，CPU在第17行调用CUDA的内核函数配置语法的启动GPU上的计算。
 内核函数配置语法看起来很像C中的函数调用，其中一些附加信息指定了三角括号\texttt{（<<< >>>）}之间包含的线程数。
@@ -228,14 +281,14 @@ CPU代码传递给内核配置表达式的参数将被分发到GPU上正在运�
 我们注意到NVIDIA推出了统一内存，它可以从CPU内存透明地更新GPU内存，从GPU内存中透明地更新CPU内存。 
 在启用统一内存的系统中，驱动和硬件负责数据的传输拷贝，而无需程序员手动操作。
 这种方法极大的减轻了程序员的负担，我们的内存超额配置管理框架也是基于统一内存的概念。
-但在图yyy这个例子中，我们为了简单理解，采用了传统的程序员控制内存拷贝的形式。
+但在图~\ref{fig:cudasaxpy}这个例子中，我们为了简单理解，采用了传统的程序员控制内存拷贝的形式。
 
-遵循许多NVIDIA CUDA示例中的风格，我们在为CPU内存中分配空间时命名指针变量使用前缀\texttt{h_}，在GPU内存中分配内存的指针使用\texttt{d_}。 
+遵循许多NVIDIA CUDA示例中的风格，我们在为CPU内存中分配空间时命名指针变量使用前缀\texttt{h\_}，在GPU内存中分配内存的指针使用\texttt{d\_}。 
 在第13行，CPU调用CUDA库函数\texttt{cudaMalloc}。 
 此函数调用GPU驱动程序并要求它在GPU上分配内存以供程序使用。 
-对\texttt{cudaMalloc}的调用将\texttt{d_x}设置为指向GPU内存区域，该区域包含足够的空间来容纳n个32位浮点值。 
+对\texttt{cudaMalloc}的调用将\texttt{d\_x}设置为指向GPU内存区域，该区域包含足够的空间来容纳n个32位浮点值。 
 在第15行，CPU调用CUDA库函数\texttt{cudaMemcpy}。 
-此函数调用GPU驱动程序并要求它从\texttt{h_x}指向CPU内存的位置复制数组的内容到由\texttt{d_x}指向的GPU内存中的位置。
+此函数调用GPU驱动程序并要求它从\texttt{h\_x}指向CPU内存的位置复制数组的内容到由\texttt{d\_x}指向的GPU内存中的位置。
 
 对于GPU上线程的执行，并行编程中采用的通用策略是为每个线程分配一部分数据。
 为了实现这种策略，GPU上的每个线程都可以在线程块网格中查找自己的id。
@@ -257,11 +310,11 @@ CPU代码传递给内核配置表达式的参数将被分发到GPU上正在运�
 
 在很大程度上，编译器和硬件的组合使程序员无需了解warp中线程执行的锁步特性。 
 编译器和硬件使得warp中的每个线程能够独立执行。 
-在图yyy中的第4行，我们将索引i的值与n（数组x和y的大小，即总线程数）进行比较。 
+在图~\ref{fig:cudasaxpy}中的第4行，我们将索引i的值与n（数组x和y的大小，即总线程数）进行比较。 
 i小于n的线程执行第5行。
-图yyy中的第5行执行图xxx中原始循环的一次迭代。 
+图~\ref{fig:cudasaxpy}中的第5行执行图~\ref{fig:csaxpy}中原始循环的一次迭代。 
 在网格中的所有线程完成后，内核函数返回，在第17行之后继续由CPU执行。
-在第18行，CPU调用GPU驱动程序将\texttt{d_y}指向的数组从GPU内存复制回CPU内存。
+在第18行，CPU调用GPU驱动程序将\texttt{d\_y}指向的数组从GPU内存复制回CPU内存。
 
 下面我们介绍一些SAXPY示例未说明的其他细节。
 一个线程块中的线程可以通过每个流多核处理器的便笺存储器相互高效通信。这个便笺存储器被NVIDIA称为共享内存（share memory）。
@@ -269,7 +322,7 @@ i小于n的线程执行第5行。
 共享内存中的空间在该SM上运行的所有线程块之间划分。每个线程块拥有一块独立的空间。
 AMD的新一代GPU架构GCN包括一个类似的内存，AMD称之为本地数据存储（Local Data Store, LDS）。
 这些内存很小，每个有16-64KB，并作为一个特殊的内存空间给程序员控制。
-程序员在源代码中使用特殊关键字将内存分配到便笺存储器中（例如，CUDA中的\texttt{“__shared__”}）。
+程序员在源代码中使用特殊关键字将内存分配到便笺存储器中（例如，CUDA中的\texttt{“\_\_shared\_\_”}）。
 便笺存储器可以被理解为软件控制的高速缓存。
 虽然GPU还包含传统的缓存，但通过这些缓存访问数据可能导致频繁的缓存未命中。
 当程序员可以识别经常重复使用的数据时，应用程序可以预测并使用便笺存储器

@@ -45,6 +45,11 @@
 %
 \documentclass[doctor,twoside,otf]{nudtpaper}
 \usepackage{mynudt}
+\usepackage{ listings} 
+
+
+
+
 
 \classification{TP393}
 \serialno{14069001}
@@ -69,6 +74,14 @@
 % 加入makenomenclature命令可用nomencl制作符号列表。
 
 \begin{document}
+
+\lstset{numbers=left, 
+numberstyle= \small, 
+keywordstyle= \color{ blue!70},commentstyle=\color{red!50!green!50!blue!50}, 
+frame=shadowbox, 
+rulesepcolor= \color{ red!20!green!20!blue!20},escapeinside=``
+} 
+
 \graphicspath{{figures/}}
 % 制作封面，生成目录，插入摘要，插入符号列表 \\
 % 默认符号列表使用denotation.tex，如果要使用nomencl \\
