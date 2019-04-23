@@ -1,4 +1,4 @@
-\chapter{一种动态采用检查点备份技术的GPU主动抢占策略}
+\chapter{动态采用检查点备份技术的\\GPU主动抢占策略}
 \label{chap:PEP}
 
 \section{研究概述}
@@ -6,7 +6,7 @@
 GPU由于其大规模并行处理能力，已经在高性能计算，机器学习和科学计算等领域得到广泛应用。
 这些领域的计算如今以服务的形式存在于数据中心或云上，而GPU则可作为基础硬件资源提供给不同的用户。
 多任务处理在GPU中为支持并行服务和任务已经变得必不可少。
-已经有些重要的硬件特性支持多任务处理，例如Nvidia Kepler体系结构提供的HYPER-Q、AMD支持的命令处理机制等。
+已经有些重要的硬件特性支持多任务处理，例如NVIDIA Kepler体系结构提供的HYPER-Q、AMD支持的命令处理机制等。
 虽然已经有这些机制支持多任务处理，但还需要更多的工作来支持真正的多任务处理机制。
 
 上下文切换是一种在CPU中常用的支持并行性的技术，如今该技术已经被应用到了GPU来支持多任务切换。
@@ -40,7 +40,7 @@ CPU的进程相对来说非常轻量化，所以在上下文切换和时分任�
 所以，我们为寄存器设置脏位，来表明该寄存器是否是有效的。
 只有有效的寄存器才会被备份，这大大减少了需要存储的上下文大小。
 此外，我们设计了一个动态实时调度策略来确定抢占方法。
-短的内核函数将要继续执行直到结束，而长的内核函数需要采用checkpoint（上下文切换）来进行抢占。
+短的内核函数将要继续执行直到结束，而长的内核函数需要采用检查点备份（上下文切换）来进行抢占。
 这个算法可以达到最小延迟和开销。
 我们的贡献主要包括：
 1）	我们研究了内核函数启动的过程，观察到抢占的事件可以被预测。
@@ -70,18 +70,57 @@ PEP的总开销，即平均线程块切换延迟，相比Chimera减少了6.3\%�
 一个内核函数的执行意味着无数线程同时在GPU上并行执行。
 线程会被程序员组合成线程块。
 NVIDIA GPU的CUDA编程模型以CUDA C的形式展示给程序员，即从C语言和实时库中扩展而来。
-图1是一段CUDA程序的例子。一段典型的CUDA C程序的操作序列包括：
+图~\ref{fig:cuda_code}是一段CUDA程序的例子。一段典型的CUDA C程序的操作序列包括：
 1）	声明和分配主机和设备的内存（8-13行）
 2）	从主机内存向设备内存迁移数据（14行）
 3）	启动内核函数。在这个例子里，程序员启动N/256个线程块，每个线程块包括了256条线程（15行）
 4）	从设备内存向主机内存迁移数据（16行）
 5）	释放内存空间（18-19行）
 
+\begin{figure}[htbp] 
+  \centering
+  \begin{lstlisting}[language={[ANSI]C}]
+__global__ void axa(double a, double *x){
+  int i = blockIdx.x*blockDim.x+threadIdx.x;
+  x[i] = a*x[i] + a;
+}
+
+void main(){
+  int N = 1048576;
+  double *x, *d_x;
+  x = (double*)malloc(N*sizeof(double));
+  for (int i = 0; i < N; i++) {
+  	x[i] = 3.0;
+  } 
+  cudaMalloc(&d_x, N*sizeof(double)); 
+  cudaMemcpy(d_x, x, N*sizeof(double), cudaMemcpyHostToDevice);  
+  axa<<<N/256, 256>>>(3.0, d_x);
+  cudaMemcpy(x, d_x, N*sizeof(double), cudaMemcpyDeviceToHost);
+  std::cout<<"Output:"<<x<<std::endl;
+  cudaFree(d_x);
+  free(x);
+ }
+  \end{lstlisting} 
+\caption{典型CUDA代码示例}
+\label{fig:cuda_code}
+\end{figure}
+
+
+
 线程块之间是互相独立的，他们被分别发送到GPU核心上。
 每个GPU核心上能够并行的线程块数量受限于设备的资源（包括寄存器，共享内存和线程的数量），这个信息可以在编译阶段获取。
 大多数之前的抢占策略的相关设计工作是以线程块的粒度完成的，也会采用可用资源的信息帮助不同抢占策略的选择。
 
-\textbf{GPU体系结构}：图2xxxx是GPU基准体系结构，我们本章所描述的GPU体系结构均基于此结构。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_PEP/Fig_Baseline_Architecture}
+  \caption{GPU基准体系结构}
+  \label{fig:Fig_Baseline_Architecture}
+\end{figure}
+
+
+\textbf{GPU体系结构}：图~\ref{fig:Fig_Baseline_Architecture}是GPU基准体系结构，我们本章所描述的GPU体系结构均基于此结构。
 当一个GPU程序收到主机CPU执行时发送的操作指令，用户空间实时引擎将API调用指令转换为相关的GPU控制数据操作和内核函数的启动。
 GPU设备驱动发送这些操作指令到流控制管理器的队列里。
 流控制管理器通过软件队列来管理多条不同的流（streams）；每一条流里的指令将被串行执行。
@@ -115,7 +154,7 @@ SIMT栈存储的是线程执行信息，例如程序计数器和有效线程掩�
 如果该新的内核函数需要满足严格的延迟要求，而等待上一个内核函数执行完毕再开始执行则无法满足该延迟要求。
 因此我们需要去抢占一些正在运行的线程块来为新的内核函数的线程块提供资源。
 但是，线程块的上下文相对来说非常大，将他们存到全局内存将引入相当大的开销，抢占延迟也会非常大。
-如表1xxxxxx所示，抢占延迟（平均上下文切换时间）有可能超过20us。
+如表~\ref{table:time}所示，抢占延迟（平均上下文切换时间）有可能超过20us。
 这些延迟给需要满足延迟要求的新内核函数造成很大隐患。
 
 为达到较低的抢占延迟的目标，Park等人提出了一种方法，在满足幂等性要求的前提下可以直接丢弃线程块，后续再重新执行。
@@ -134,7 +173,7 @@ SIMT栈存储的是线程执行信息，例如程序计数器和有效线程掩�
 这种方法不要求上下文的存储备份，因此抢占开销能够最小化。
 但是，这种情况的抢占延迟也可能非常高，这是因为内核函数的执行时间可能非常长，执行时间会非常长。
 这很可能导致抢占内核函数无法满足其延迟要求。
-表1包含了我们测量的不同的内核函数的单个线程块运行时间。
+表~\ref{table:time}包含了我们测量的不同的内核函数的单个线程块运行时间。
 我们可以看到，有的线程块（如Kmeans）的执行时间达到接近1ms。
 因此，GPU核心排空执行的方法最适合较短延迟的线程块。
 
@@ -157,6 +196,53 @@ GPU检查点技术已经在软件上被实现。
 检查点技术被采用来降低未来的上下文切换的延迟。
 为引入检查点技术到抢占操作中，限制检查点次数尤为重要，因为我们另一个目标是降低抢占操作的开销。
 
+\begin{scriptsize}
+\begin{table}[t]
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+  \centering
+  \begin{tabular}{|l|l|l|l|l|l|l|l|}  
+    \hline
+    \textbf{应用程序} & \textbf{内核函数} & \tabincell{c}{\textbf{平均}\\\textbf{启动时间}}  & \tabincell{c}{\textbf{平均线程块}\\\textbf{执行时间}} & \tabincell{c}{\textbf{平均}\\\textbf{切换时间}} & \tabincell{c}{\textbf{平均}\\\textbf{线程块大小}} & \tabincell{c}{\textbf{每个GPU核心}\\\textbf{线程块数量}}\\
+    \hline
+    \hline
+    \tabincell{c}{CUTCP\\(CP)} & \tabincell{c}{cuda\_cutoff\\\_potential} & 5.8$\mu$s &516.2$\mu$s&10.1$\mu$s&16.5KB&8 \\
+    \hline
+    \tabincell{c}{LBM\\(LBM)} &  \tabincell{c}{performStream \\ Collide\_kernel} &21.8$\mu$s&31.7$\mu$s&20.9$\mu$s&18KB&14\\
+    \hline
+    \tabincell{c}{MRI-Q\\(MRI)}  &ComputeQ\_GPU&10.4$\mu$s&865.2$\mu$s&11.6$\mu$s&18KB&8 \\
+    \hline
+    \tabincell{c}{STENCIL\\(ST)}  & \tabincell{c}{block2D\_hybrid\\ \_coarsen} & 4.5$\mu$s&41.3$\mu$s&4.2$\mu$s&12.5KB&4 \\
+    \hline
+    \tabincell{c}{STREAM\\CLUSTER(SC)}  & \tabincell{c}{kernel\_ \\ compute\_cost} & 6.7$\mu$s & 605.6$\mu$s & 8.3$\mu$s & 24KB & 4\\
+    \hline
+    \tabincell{c}{GEMM\\(GM)}  & matrixMulCUDA & 23.4$\mu$s &193.6$\mu$s& 17.9$\mu$s&28KB&8\\
+    \hline
+    \tabincell{c}{BLACK\\SCHOLES(BS)} & BlackScholarGPU &3.4$\mu$s & 387.5$\mu$s & 16.7$\mu$s&12.5KB&16 \\
+    \hline
+    \tabincell{c}{KMEANS\\(KS)} & invert\_mapping & 29.7$\mu$s & 984.7$\mu$s & 9$\mu$s&10KB&8\\
+    \hline
+    \tabincell{c}{PATHFINDER\\(PF)}  & dynproc\_kernel&11.3$\mu$s &24.2$\mu$s&11.6$\mu$s&18KB&8\\
+    \hline
+    \tabincell{c}{SRAD\_V1\\(SRAD1)} & extract&5.2$\mu$s &1.8$\mu$s&4$\mu$s&12KB&4\\
+   	\hline
+    \tabincell{c}{SRAD\_V2\\(SRAD2)}  & srad\_cuda& 15$\mu$s & 11.5$\mu$s&16.4$\mu$s&25KB&8\\
+    \hline
+    \tabincell{c}{SRAD\_V1\\(SRAD3)} & srad & 5.2$\mu$s &7.9$\mu$s &7.8$\mu$s&24KB&4\\
+    \hline
+    \tabincell{c}{HOTSPOT\\(HS)} & calculate\_temp &33.3$\mu$s&4.5$\mu$s&7.7$\mu$s&38KB&3\\
+    \hline
+    \tabincell{c}{LUD\\(LUD)} & lud\_internal & 4.4$\mu$s &5.3$\mu$s&10.5$\mu$s&16KB&8\\
+    \hline
+    \tabincell{c}{BACKPROP\\(BP)} & \tabincell{c}{bpnn\_ \\ layerforward} & 16.7$\mu$s &4.7$\mu$s &2$\mu$s&12KB&1\\
+    \hline
+    \tabincell{c}{BACKPROP\\(BP2)} & \tabincell{c}{bpnn\_adjust \\ \_weights} & 16.7$\mu$s & 1.5$\mu$s &1.2$\mu$s&22KB&1\\
+    \hline
+    
+  \end{tabular}
+  \caption{各应用程序启动时间、线程块切换时间与执行时间.}
+  \label{table:time}
+\end{table}
+\end{scriptsize}
 
 \section{研究动机}
 Chimera采用了一个选择算法在抢占请求到来时为不同的线程块选择不同的抢占方法；这个选择是基于对前面介绍的三种方法的选择和平衡。
@@ -164,7 +250,7 @@ Chimera估计了每一种技术的抢占延迟和开销来选择最有效的抢�
 因此，GPU核心中不同的线程块会被不同的抢占方法被抢占。
 
 但是我们发现排空执行方法和上下文切换方法会竞争全局内存的带宽。
-举例来看，在图3xxxxxxxxx中，访存密集型的应用程序LBM会遇到这样的一种冲突：
+举例来看，在图~\ref{fig:motivation}中，访存密集型的应用程序LBM会遇到这样的一种冲突：
 LBM在每个GPU核心中可以执行9个线程块；我们展示了所有10种切换和排空执行的可能性组合。
 如果所有的线程块被一个又一个地切换，则不会出现切换和排空执行的竞争。
 而另一种情况是当一个GPU核心在上下文切换时，其他GPU核心都在排空执行时，排空执行的时间和上下文切换时间都将远长于8个线程块在做上下文切换操作，1个线程块在排空执行的情况。
@@ -173,8 +259,17 @@ LBM在每个GPU核心中可以执行9个线程块；我们展示了所有10种�
 另一方面，这个排空执行的线程块不会与其他线程块竞争执行单元。
 因此，IPC受到排空执行的线程块的数量影响。
 
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/motivation}
+  \caption{LBM的上下文切换时间和排空执行时间对比（每个GPU核心有9个线程块在同时执行）}
+  \label{fig:motivation}
+\end{figure}
+
+
 我们也观察到在每个GPU核心中所有的线程块通常选择同一种抢占方法。
-表1展示了线程块执行时间的范围远大于上下文切换的时间范围。
+表~\ref{table:time}展示了线程块执行时间的范围远大于上下文切换的时间范围。
 因此，对于长内核函数，排空执行时间和上下文切换时间相差巨大。
 因此，对于短的抢占内核函数来说，最佳方法是排空执行GPU核心内所有的线程块，这可以满足延迟要求的同时接近零抢占开销。
 相反，对于长的内核函数，如果不满足幂等性要求，则必须做上下文切换。
@@ -271,9 +366,9 @@ vCUDA则是一个GPU虚拟化方面的重要工作。
 通过我们对一系列应用程序的研究分析，我们发现有三个时间对我们预测策略的正确性特别关键，分别是内核函数启动时间、上下文切换时间和线程块执行时间。
 内核函数启动时间可以用来预测什么时候抢占请求会真正启动。
 上下文切换时间和线程块执行时间可以用来确定采用基于检查点的上下文切换技术还是排空执行技术。
-表1xxxxxxxxx展示了我们测量的三种延迟。
+表~\ref{table:time}展示了我们测量的三种延迟。
 
-1)\textbf{预测}：从对表1的研究我们有两点重要的观察。
+1)\textbf{预测}：从对表~\ref{table:time}的研究我们有两点重要的观察。
 第一，是我们发现内核函数启动的时间和上下文切换的时间（接近检查点技术的延迟）是在同一个数量级。
 这意味着如果我们在开始在预测的时间进行一次检查点备份时，很可能在抢占请求发生时，我们刚好完成有效上下文的存储备份。
 第二，无论是上下文切换时间还是内核函数启动的时间，在大多数情况都远小于线程块的执行时间。
@@ -286,13 +381,13 @@ vCUDA则是一个GPU虚拟化方面的重要工作。
 cudaLaunch会触发内核函数启动。
 该操作会将内核函数的相关信息传输到GPU，包括线程块的组织信息（网格和块的维度）、指针以及共享内存的分配等信息。
 我们测试了大量的应用程序，观察到内核函数启动的时间是在几十微秒的数量级。
-表1xxxxxxx展示了一系列我们测试的应用程序，可以发现内核函数启动时间从3.3us到33.3us不等。
+表~\ref{table:time}展示了一系列我们测试的应用程序，可以发现内核函数启动时间从3.3us到33.3us不等。
 这个时间是从cudaLaunch被调用到内核函数信息被传输到内核函数管理单元，假设没有在流控制处理器中排队。
 这种较高的内核函数启动时间包括软件API调用和参数数据拷贝到GPU的内核函数等待池（Pending Kernel Pool）的过程。
 因此，这些开销会有很大差异。
 
 此外，每个线程块的平均上下文切换时间从1us到20us不等，该时间取决于每个线程块的上下文的大小。
-从表1xxx中我们知道上下文切换的时间和内核函数启动的时间在同一个数量级。
+从表~\ref{table:time}中我们知道上下文切换的时间和内核函数启动的时间在同一个数量级。
 上下文切换的时间大致与内核函数启动的时间接近。
 这意味着如果我们完成第一个检查点备份，抢占请求可能已经启动。
 在这种情况，我们可以立即释放资源，为新的内核函数腾出空间。
@@ -300,7 +395,7 @@ cudaLaunch会触发内核函数启动。
 这是因为如果一个检查点备份完成之后，真正的抢占请求还未到来。
 GPU核心可以继续执行线程块直到抢占开始，在抢占时仅需存储更新的上下文。
 
-如表1xxxxx所示，我们也发现平均线程块的执行时间再1.5us到超过900us不等。
+如表~\ref{table:time}所示，我们也发现平均线程块的执行时间再1.5us到超过900us不等。
 这种变化不定的线程块执行时间完全取决于内核函数的大小。
 短内核函数的线程块将被排空执行。
 这种方法几乎没有开销，同时满足抢占内核函数的延迟要求，因为排空执行的时间非常短。
@@ -330,18 +425,27 @@ Chimera估计每个线程块的排空执行时间为线程块剩余的指令数�
 上下文切换时间为每个线程块的上下文大小除以全局内存被每个GPU核心分享的带宽。
 但是这种基于线程块的方法在某些情况下并不准确。
 而当排空执行和上下文切换同时进行的时候，这个时间变得无法估计。
-如图4所示，当一般的线程块在排空执行，而其他的线程块在做上下文切换时，估计的时间与实际的时间相差巨大。
+如图~\ref{fig:CDrain_Est}所示，当一般的线程块在排空执行，而其他的线程块在做上下文切换时，估计的时间与实际的时间相差巨大。
 这是因为较少的排空执行的线程块意味着在流处理器（SP）较小的冲突，上下文切换的线程块在全局内存的带宽上出现更多的冲突。
+
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.8\textwidth]{/Figs_PEP/CDrain_Est}
+  \caption{Chimera的估计排空执行时间}
+  \label{fig:CDrain_Est}
+\end{figure}
+
 
 虽然Chimera的估计对于全部线程块都做排空执行时更加精确，在某些特定情况仍然有非常不精确的地方。
 比如说，有的应用程序，如LBM和KS有多个阶段：它们的CPI在不同的时段不一样。
-在图4中，KS在开始的时候CPI非常低，但其CPI随着程序的执行而不断上升。
+在图~\ref{fig:CDrain_Est}中，KS在开始的时候CPI非常低，但其CPI随着程序的执行而不断上升。
 因此，估计的时间和真实测量的时间相差很大。
 另外，Chimera估计上下文切换时间来选择抢占策略时，只考虑单个线程块。
 例如三个线程块在做上下文切换，则需要传输备份的总上下文大小是原上下文大小的三倍。
 因此真正的尚晓雯切换时间要比Chimera估计的每个线程块上下文时间长3倍。
 
-从表1中可知，线程块的执行时间和线程块的上下文切换时间相差很大。
+从表~\ref{table:time}中可知，线程块的执行时间和线程块的上下文切换时间相差很大。
 对于大多数的应用程序，我们会选择排空执行所有的线程块或者上下文切换所有的线程块。
 因此，排空执行的时间和上下文切换的时间是可估计的。
 我们不需要担心上下文切换和排空执行的互相干扰。
@@ -365,11 +469,19 @@ Chimera估计每个线程块的排空执行时间为线程块剩余的指令数�
 为了追踪寄存器的利用率，在协会的过程中，一旦一个寄存器被写入数据则需要置脏位为1。
 当warp运行完成了或者我们采用检查点技术后将重置相应脏位。我们可以用类似的方法追踪共享内存写。
 
-图5展示了多个应用程序的脏寄存器的大小相比于被分配的大小。
+图~\ref{fig:dirtyrate}展示了多个应用程序的脏寄存器的大小相比于被分配的大小。
 我们收集了不同执行阶段脏寄存器的百分比。
 我们的初始收集点是线程块执行的25\%阶段。
 Dirty1和Dirty2是脏寄存器在50\%和75\%线程块执行时间相比于初始收集点的百分比。
 对于一些包含了非常多指令的内核函数，MRI到PF，Dirty1和Dirty2相比于初始状态，平均下降了38.2\%和48\%。一般来说，Dirty2相比于Dirty1有较少的脏寄存器，因为在75%的时间点部分warp执行结束，并释放了一些寄存器。我们发现这样的脏位分析是足够的，我们不需要采用编译时的活性分析和寄存器值的压缩。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.8\textwidth]{/Figs_PEP/dirtyrate}
+  \caption{相对于分配的寄存器数量：Initial：线程块执行时间的25\%、Dirty1: 线程块执行时间的50\%、Dirty2：线程块执行时间的75\%}
+  \label{fig:dirtyrate}
+\end{figure}
+
 
 我们还在最后一次检查点备份中采用了本地上下文存储。
 因为新的内核函数可以采用旧内核函数没有使用的空间，本地上下文切换的方法得以采用。
@@ -411,9 +523,17 @@ Dirty1和Dirty2是脏寄存器在50\%和75\%线程块执行时间相比于初始
 但是，在这个时候GPU核心不允许执行任何任务。
 所以，所有的带宽将被用来做上下文恢复。
 
-2)\textbf{在线选择器}：从表1中我们可以知道，执行时间、上下文的大小还有内核函数启动时间对于不同的内核函数都不一样。
+2)\textbf{在线选择器}：从表~\ref{table:time}中我们可以知道，执行时间、上下文的大小还有内核函数启动时间对于不同的内核函数都不一样。
 因此，当cudaLaunch触发了我们的主动抢占机制，有许多种可能性。
-图6展示了这些可能性：
+图~\ref{fig:allconditions}展示了这些可能性：
+
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_PEP/allconditions}
+  \caption{PEP可能性分析：K1：被抢占的内核函数、K2：抢占内核函数、Chk-1：基础检查点备份、Chk-2：增量检查点备份}
+  \label{fig:allconditions}
+\end{figure}
 
 （a）两次检查点备份：这是最常出现的情况。
 内核函数启动的时间比第一次检查点备份的时间长。
@@ -434,8 +554,15 @@ Dirty1和Dirty2是脏寄存器在50\%和75\%线程块执行时间相比于初始
 被抢占的内核函数和（a）的情况一样。
 当cudaLaunch被调用时，线程块接近执行完毕，和d的情况类似。
 
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_PEP/design_flow}
+  \caption{在线选择策略}
+  \label{fig:design_flow}
+\end{figure}
+
 我们设计了一种动态在线选择机制来处理这些可能性。
-图7xxxxxx阐述了我们的在线选择方法。
+图~\ref{fig:design_flow}阐述了我们的在线选择方法。
 当抢占内核函数的cudaLaunch被调用，我们比较预测的内核函数启动时间与估计的当前线程块的剩余执行时间。
 如果线程块的估计排空时间比上下文切换时间长，我们定义该内核函数为大内核函数。
 （a）和（b）均处理的是长内核函数，收集活跃的上下文，并用检查点备份的方法存储到全局内存。
@@ -445,6 +572,8 @@ Dirty1和Dirty2是脏寄存器在50\%和75\%线程块执行时间相比于初始
 如果新的新的线程块可以及时排空执行完毕，才发生抢占，则可以考虑（c）的情况。
 否则，我们考虑（d）的方案。
 这是b的另一种情况，而e是a的另一种情况。
+
+
 
 \subsection{硬件开销}
 为了实现PEP，GPU需要增加新的控制逻辑，主要为了实现以下部件：
@@ -458,11 +587,42 @@ Dirty1和Dirty2是脏寄存器在50\%和75\%线程块执行时间相比于初始
 
 \subsection{实验方法}
 我们在最新版本的GPGPU-Sim中实现了PEP，以及Chimera。
-系统配置信息总结在了表2。
+系统配置信息总结在了表~\ref{table:configuration}。
 配置中256KB寄存器和96KB的共享内存反映了当前GPU系统结构中较大的上下文。
 默认情况下，GPGPU-Sim仅模拟PTX指令，这是一种不限制寄存器使用数量的汇编伪指令集。
 这并无法直接在硬件中执行，而SASS才是在硬件上执行的原生指令集。
 因此，我们采用一种能够和SASS一一对应的PTXPlus指令集进行模拟，这能够准确的模拟寄存器脏位。
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{|l|l|}  
+    \hline
+    配置 & NVIDIA Geforce GTX980\\
+    \hline
+    \hline
+    GPU核心数量 & 16\\
+    \hline
+    SIMD宽度 & 32\\
+    \hline
+    SIMT核心时钟频率 & 1216MHz\\
+    \hline
+    存储时钟频率 & 7GHz\\
+    \hline
+    访存控制器数目 & 4 \\
+    \hline
+    调度策略 & 4个warp调度器采用Loose-Round-Robin策略\\
+    \hline
+    寄存器大小 & 256KB\\
+    \hline
+    共享内存大小 & 96KB\\
+    \hline
+    每个GPU核心的线程块数目最大值 & 32\\
+    \hline
+  \end{tabular}
+  \caption{GPGPU-Sim参数配置}
+ \label{table:configuration}
+\end{table}
+
 
 为了比较，我们实现了多个不同版本的Chimera和PEP：原生的Chimera、采用脏上下文的Chimera、原生的PEP以及采用了本地上下文备份的PEP。
 我们测试了许多内核函数，这些内核函数来自于多个测试集的GPGPU应用程序，包括NVIDIA Computing SDK、Parboil、Rodinia和Darknet等。
@@ -474,7 +634,7 @@ PEP的相关参数我们将在稍后讨论。
 
 因为GPGPU-sim不模拟从cudaLaunch API调用到内核函数在GPU真正开始的时机，
 我们设计了自己的实验方法。
-我们采用NVIDIA profiler来收集分析内核函数启动所需要的时间，这个时间如表1所示，从3us到33us不等。
+我们采用NVIDIA profiler来收集分析内核函数启动所需要的时间，这个时间如表~\ref{table:time}所示，从3us到33us不等。
 我们之后设置抢占内核函数的启动时间分别为5us、15us、25us或35us不等。
 我们还设置了预测的内核函数启动时间为20us或30us。
 此外，抢占可以发生在被抢占内核函数执行的任何阶段，因此我们设置了不同的抢占cudaLaunch调用的时机。
@@ -486,13 +646,22 @@ PEP的相关参数我们将在稍后讨论。
 \subsection{实验结果}
 
 \subsubsection{策略选择分布}
-如图8所示，我们收集了每个应用程序采用实时策略选择后所有线程块的策略分布。
-对于线程块运行时间长于100us（表1所示）的应用程序，所有的线程块均采用了两次检查点备份的抢占方法。
+如图~\ref{fig:distribution}所示，我们收集了每个应用程序采用实时策略选择后所有线程块的策略分布。
+对于线程块运行时间长于100us（表~\ref{table:time}所示）的应用程序，所有的线程块均采用了两次检查点备份的抢占方法。
 相对地，所有选择排空执行所有线程块的都是小内核函数，即平均线程块执行时间较短。
 对于LBM，线程块的平均执行时间为30.1us，而平均上下文切换时间为20.9us。
 他们的排空执行时间和上下文切换时间相差不大。
 这种相近性使得多种策略选择的出现，一些线程块需要被排空执行，而另一部分线程块则需要检查点备份技术，这都取决于被抢占的线程块的执行阶段。
 在单次检查点备份的情况中，由于省去了第二次检查点备份，我们节省了开销并降低了延迟。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/distribution}
+  \caption{抢占技术选择分布}
+  \label{fig:distribution}
+\end{figure}
+
+
 
 由于对于大多数的内核函数，平均排空执行时间和平均上下文切换时间相差较大，我们大多数时候对所有的线程块选择一种抢占方法。
 仅选择一种方法意味着排空执行的线程块的上下文切换的线程块之间没有带宽竞争。
@@ -500,7 +669,7 @@ PEP的相关参数我们将在稍后讨论。
 
 \subsubsection{抢占延迟}
 
-图9展示了抢占延迟，该延迟测量的是从抢占内核函数到达KMU开始到最后一个线程块的上下文被存储。
+图~\ref{fig:preemptiontime}展示了抢占延迟，该延迟测量的是从抢占内核函数到达KMU开始到最后一个线程块的上下文被存储。
 这也是内核函数等待池中抢占内核函数的真实等待时间。
 我们观察到后面7个内核函数排空执行每个GPU核心中所有的线程块并达到了非常低的延迟。
 这些应用程序的线程块执行时间也都相对较短。
@@ -510,13 +679,28 @@ PEP的相关参数我们将在稍后讨论。
 但是，PEP和PEP+In-place分别将总平均抢占延迟从Chimera的8.9us降低到4.5us和3.6us。
 较短的抢占延迟使得内核函数能够满足更严格的延迟要求，也增加了多任务处理的可用性。
 
-图10展示了上下文切换的抢占延迟。
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/preemptiontime}
+  \caption{平均抢占延迟}
+  \label{fig:preemptiontime}
+\end{figure}
+
+
+图~\ref{fig:normalized_preemptiontime}展示了上下文切换的抢占延迟。
 前面的9个应用程序不会选择排空执行所有的线程块。
 两个主要因素会影响他们的抢占延迟：流水线排空的时间和总的上下文大小。
 这其中，上下文大小为关键因素。
 与原生Chimera相比，脏上下文存储的Chimera能够降低31.8\%的抢占延迟，因为该方法减少了需要存储的上下文大小。
 而与原生Chimera相比，PEP能够将平均抢占延迟降低了58.5\%，而采用了本地上下文存储后，PEP能进一步将抢占延迟降低70.3\%。
 对于Kmeans（KS），PEP-In-place可以达到0抢占延迟，因为脏上下文的大小非常小，在第二次检查点备份中可以完全存储于本地。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/normalized_preemptiontime}
+  \caption{上下文切换应用程序的平均抢占延迟}
+  \label{fig:normalized_preemptiontime}
+\end{figure}
 
 \subsubsection{上下文大小缩减}
 
@@ -527,35 +711,67 @@ PEP的相关参数我们将在稍后讨论。
 我们仅将脏位应用于寄存器。大多数情况都将存储所有分配的共享内存。
 在我们实验结果中，“上下文大小”指的是必须存储到全局内存的上下文。
 
-图11比较了不同设计需要存储的上下文，只存储脏上下文，Chimera每个线程块的平均上下文大小可以被减少6KB，即平均总上下文大小的34.4\%。
+图~\ref{fig:Contextsize1}比较了不同设计需要存储的上下文，只存储脏上下文，Chimera每个线程块的平均上下文大小可以被减少6KB，即平均总上下文大小的34.4\%。
 因为PEP可能会存储检查点状态的上下文两次，PEP平均总上下文会比Chimera+dirty要大.
 但是这几乎和原生Chimera一样。然而，PEP-in-place可以进一步降低16.2\%上下文大小。
 
-图12和图13分别展示了PEP和PEP-in-place的上下文大小的细节。
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/Contextsize1}
+  \caption{上下文大小比较}
+  \label{fig:Contextsize1}
+\end{figure}
+
+
+
+图~\ref{fig:Contextsize3}和图~\ref{fig:Contextsize2}分别展示了PEP和PEP-in-place的上下文大小的细节。
 对于选择上下文切换所有线程块的应用程序，总上下文大小为第一次检查点备份和第二次检查点备份的上下文大小之和。
 实验结果显示第二次上下文的大小平均只有第一次上下文大小的56.1\%。
 而本地上下文存储可以进一步降低第二次检查点备份需存储的上下文。
-图13的实验结果显示第二次检查点备份的上下文大小平均为每个线程块3.34KB，是第一次检查点备份的上下文的29.4\%。
+图~\ref{fig:Contextsize2}的实验结果显示第二次检查点备份的上下文大小平均为每个线程块3.34KB，是第一次检查点备份的上下文的29.4\%。
 我们可以看到两次检查点备份方法大大减少了上下文的大小。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/Contextsize3}
+  \caption{需要备份到片外内存的每个线程块的上下文大小}
+  \label{fig:Contextsize3}
+\end{figure}
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/Contextsize2}
+  \caption{需要备份到片外内存的每个线程块的上下文大小（采用了本地上下文备份技术）}
+  \label{fig:Contextsize2}
+\end{figure}
+
+
 
 \subsubsection{性能敏感分析}
 
 在这一节，我们测试了带宽和可扩展性对性能的敏感性。
 
 我们保持内存分区的数量和带宽，调整不同的GPU核心数量来分析他们对于PEP策略的抢占延迟的影响。
-图14展示了抢占延迟随着GPU核心数量的增加几乎线性增加，这是因为访存流量不断升高。
-如图14所示，32个GPU核心的平均抢占延迟是16个GPU核心的平均抢占延迟的2.58倍，这说明检查点策略对于存储带宽非常敏感。
+图~\ref{fig:sensitivity}展示了抢占延迟随着GPU核心数量的增加几乎线性增加，这是因为访存流量不断升高。
+如图~\ref{fig:sensitivity}所示，32个GPU核心的平均抢占延迟是16个GPU核心的平均抢占延迟的2.58倍，这说明检查点策略对于存储带宽非常敏感。
 因此，实验结果进一步说明所有的带宽都提供给上下文切换相比于将执行和上下文切换混合在一起，抢占性能更好。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/sensitivity}
+  \caption{GPU核心数量对于抢占技术的性能影响}
+  \label{fig:sensitivity}
+\end{figure}
 
 \subsubsection{抢占开销分析}
 
 本章所指的抢占开销是指由于抢占导致的程序执行的停滞。
-抢占开销的实验结果如图15所示。
+抢占开销的实验结果如图~\ref{overhead}所示。
 当GPU核心在做上下文切换，切换的线程块必须停止取新指令和执行。
 GPU核心停滞等待上下文备份和上下文恢复。
 上下文备份和上下文恢复的唯一不同是上下文备份前排空流水线的延迟。
 因此，我们只比较每个线程块的上下文切换延迟作为开销。
-图15显示第一次检查点备份相比于Chimera开销降低了37.9\%。
+图~\ref{overhead}显示第一次检查点备份相比于Chimera开销降低了37.9\%。
 PEP的开销和采用了脏上下文的Chimera的开销类似。
 两次检查点备份的PEP开销仍然比Chimera降低了6.3\%。
 当采用了本地上下文备份能够降低第二次检查点备份的上下文大小，PEP的平均开销经一部降低了16.4\%。
@@ -563,6 +779,14 @@ PEP的开销和采用了脏上下文的Chimera的开销类似。
 在这些情况中，寄存器的重用率不高，所以脏上下文的大小更大。
 此外，采用了两次检查点备份，则更多的时间需要用来排空GPU核心的流水线。
 但是，上下文的大小和上下文切换的开销是正相关的，一些应用程序向LBM和ST由于脏上下文大小较小，因此节省的开销大于50\%。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_PEP/overhead}
+  \caption{上下文切换开销}
+  \label{fig:overhead}
+\end{figure}
+
 
 \section{本章小结}
 

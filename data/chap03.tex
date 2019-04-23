@@ -1,4 +1,4 @@
-\chapter{一种GPU内存超额配置的管理框架}
+\chapter{GPU内存超额配置的管理框架}
 \label{chap:ETC}
 
 \section{研究背景}
@@ -87,6 +87,7 @@ Wang等人提出了一种基于特征的线程级并行管理方法，来调节�
 
 
 \section{研究背景}
+\label{background}
 
 \subsection{GPU工作模型}
 GPU通过单指令多线程模型（SIMT）实现了超高的吞吐率。
@@ -116,11 +117,19 @@ GPU统一内存技术则将CPU内存和GPU内存看作一个整体的内存空�
 然而这些方法并没有尝试去直接解决实时按需取页的高开销问题。
 之前的工作发现预取在掩盖开销方面具有一定的优势，但这并没有考虑如何优化内存超额配置时的性能。
 
-图1显示了内存超额配置下不同应用程序的性能损失。
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=6in]{/Figs_ETC/oversubscription_overhead_real}
+  \caption{内存超额配置开销}
+  \label{fig:oversubscription}
+\end{figure}
+
+
+图~\ref{fig:oversubscription}显示了内存超额配置下不同应用程序的性能损失。
 我们观察了了来自CUDA SDK和Polybench测试集的五个不同的GPGPU应用程序。
 这些应用程序运行在一个拥有2GB可用内存的NVIDIA GTX 1060 GPU。
 为模拟内存超额配置，我们手动地修改可用内存，使之分别是每个GPU内核函数所需内存容量的大约50\%和大约75\%。
-从图中结果我们有三点观察。
+从图~\ref{fig:oversubscription}中结果我们有三点观察。
 第一，所有的应用程序在内存超额配置的情况下均出现了显著地性能下降：内存超额配置率越高，性能下降的程度越大。
 第二，2DCONV、3DCONV和RED三个应用程序性能平均下降了17\%。
 我们发现这个性能损失是由于为新拷贝的数据页腾出空间而等待现有物理页的逐出所导致的。
@@ -171,26 +180,53 @@ GPU统一内存技术则将CPU内存和GPU内存看作一个整体的内存空�
 设计一个有效的内存管理框架要求对应用程序访存特性有深入的分析理解，也就是应用程序的特性。
 从这个角度出发，我们首先收集分析各种不同应用程序的访存trace，抽取其中最具有代表性的访问模式。
 我们发现，应用程序一般可以被划分为规则访问模式和非规则访问模式。
-图2（a）-(b)显示了两个代表性应用程序，3DCONV和ATAX。
+图~\ref{fig:Trace_1}（a）-（b）显示了两个代表性应用程序，3DCONV和ATAX。
 在线程块与数据页访问的关系中，3DCONV呈现出典型的流访问模式，而ATAX则呈现出一种相对随机的访问模式。
 在任一时间点，3DCONV只访问非常少数量的页。
-如图3所示，几乎所有的线程块在一个时间点都在访问少量的几块数据页。
+如图~\ref{fig:Trace_2}所示，几乎所有的线程块在一个时间点都在访问少量的几块数据页。
 相反地，无论在任一时间点，ATAX都在同时访问大量的页面。
-如图3b所示，ATAX的不同线程块访问的是不同的页面。
+如图~\ref{fig:Trace_2}（b）所示，ATAX的不同线程块访问的是不同的页面。
 我们还发现有许多应用程序都表现出和3DCONV类似的内存访问特征。
 这一类应用程序的在线工作数据集相对较小，也就是说在一段时间内访问的数据量相对较小。
 相反地，像ATAX这一类非规则应用程序的在线工作数据集相对较大，因为每个线程都有可能访问一个新的不同的数据页。
 这将导致在给定的时间内大量不同的数据页被访问。
 此外，我们发现规则应用程序的访存是可以被预测的，如流访问模式，而非规则应用程序的访问模式是无法被预测的。
 
+
+
+\begin{figure}[htb]
+\centering
+\subfloat[规则应用程序]{\includegraphics[width=.7\textwidth]{/Figs_ETC/Trace_3DCONV_1}} \qquad
+\subfloat[非规则应用程序]{\includegraphics[width=.7\textwidth]{/Figs_ETC/Trace_ATAX_1}}  
+\caption{数据页访问特性实例：（a）规则应用程序和（b）非规则应用程序}
+\label{fig:Trace_1}
+\end{figure}
+
+
+\begin{figure}[htb]
+\centering
+\subfloat[规则应用程序]{\includegraphics[width=.7\textwidth]{/Figs_ETC/Trace_3DCONV_2}} \qquad
+\subfloat[非规则应用程序]{\includegraphics[width=.7\textwidth]{/Figs_ETC/Trace_ATAX_2}} 
+\caption{线程块访问数据页关系实例：（a）规则应用程序（b）非规则应用程序}
+\label{fig:Trace_2}
+\end{figure}
+
 我们观察到对于规则应用程序，流访问模式的可预测性表现在被逐出的页通常都不会在一段时间后被重新请求，这很自然地避免了内存抖动现象。
 但是，对于非规则的应用程序，预测访问模式非常困难，一旦在线工作数据集超出了有效的内存容量，任何被逐出的页都有可能短时间内再次被请求，导致内存抖动的发生。
 
 \textbf{GPU内核函数间数据共享}。
 另一种可能的情况是某些规则应用程序，不同的GPU内核函数访问并处理同一块数据。
-如图4所示，在LUD中，每个内核函数的访存模式均为流访问模式且在线工作数据集相对较小。
+如图~\ref{fig:LUD_trace}所示，在LUD中，每个内核函数的访存模式均为流访问模式且在线工作数据集相对较小。
 但是，当一个应用程序的多个内核函数共享一块数据时，这块数据将被重复多次访问。
 不同的内核函数之间存在同步栅栏，当数据大于物理内存的容量时，这块数据需要多次在CPU内存和GPU内存之间来回搬运，导致性能的大幅下降。
+
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_ETC/LUD_trace}
+  \caption{LUD数据页访问特性：数据共享的规则应用程序（多个内核函数访问同一块数据；虚线代表每个内核函数的结束时间点）}
+  \label{fig:LUD_trace}
+\end{figure}
 
 基于以上发现，我们得出三点结论。
 首先，数据页逐出等待时间是规则应用程序内存超额配置的最主要开销来源；
@@ -210,6 +246,7 @@ ETC的核心思想是为不同类型的应用程序采用不同的内存管理�
 对于非规则应用程序，ETC会采用减少一部分运行的GPU核心来控制并行度，同时采用内存容量压缩技术来优化性能。
 
 \subsection{应用程序划分}
+\label{AC}
 
 在ETC框架能够选择为哪种应用程序采用哪一种技术之前，它首先需要检测应用程序的类型以及是否存在不同内核函数之间的数据共享。
 为检测每个GPU核心上运行的应用程序的类型，ETC框架采用访存合并系数作为判断指标，这种应用程序剖析指标在GPU等单指令多线程体系结构的系统中被广泛使用。
@@ -226,12 +263,20 @@ ETC的核心思想是为不同类型的应用程序采用不同的内存管理�
 
 主动数据页逐出的关键想法是预先地在GPU用完所有的物理内存空间之前就逐出数据页。
 这将允许数据页逐出产生的数据迁移与缺页中断产生的数据迁移同时发生。
-图5给出了主动逐出技术如何工作的例子。
+图~\ref{fig:Eviction_Overhead}给出了主动逐出技术如何工作的例子。
 当页面在GPU内存缺失时，失败的虚实地址转换会产生缺页中断，内存管理单元（Memory Management Unit, MMU）则会向CPU内存取该数据页。
-如图5（a）所示，如果应用程序用尽了物理内存，对新数据的访问需等到其他GPU内存中的数据页被逐出回CPU内存后才能执行。
+如图~\ref{fig:Eviction_Overhead}（a）所示，如果应用程序用尽了物理内存，对新数据的访问需等到其他GPU内存中的数据页被逐出回CPU内存后才能执行。
 在目前的商业GPU产品系统中，数据页逐出只能被缺页中断触发。
-从CPU到GPU的内存迁移只能在GPU到CPU的数据页被逐出内存，数据迁移完成之后才能开始，如图5a所示。
-如图5b所示，我们观察到可以通过重叠数据页逐出和缺页中断处理的延迟来掩盖逐出开销，实现降低内存超额配置开销的目的。
+从CPU到GPU的内存迁移只能在GPU到CPU的数据页被逐出内存，数据迁移完成之后才能开始，如图~\ref{Eviction_Overhead}（a）所示。
+如图~\ref{fig:Eviction_Overhead}（b）所示，我们观察到可以通过重叠数据页逐出和缺页中断处理的延迟来掩盖逐出开销，实现降低内存超额配置开销的目的。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/Eviction_Overhead}
+  \caption{LUD数据页访问特性：数据共享的规则应用程序（多个内核函数访问同一块数据；虚线代表每个内核函数的结束时间点）}
+  \label{fig:Eviction_Overhead}
+\end{figure}
+
 
 当前GPU支持双DMA引擎，这使得缺页中断和数据页逐出产生的数据迁移理论上能够同时发生。
 应用程序开发者可以通过手动操作并行预取和逐出操作来优化应用程序。
@@ -250,10 +295,19 @@ ETC的核心思想是为不同类型的应用程序采用不同的内存管理�
 \textbf{避免过早的数据页逐出}。
 为确定主动数据页逐出的正确时机，我们剖析在NVIDIA GTX 1060 GPU上运行的几个不同的GPGPU应用程序。
 我们观察每个应用的内存访问轨迹，即数据页从CPU迁移到GPU的量是如何增长的。
-图6显示了五个GPGPU应用程序从CPU内存移动数据页到GPU内存的轨迹图。
+图~\ref{fig:footprint_rate}显示了五个GPGPU应用程序从CPU内存移动数据页到GPU内存的轨迹图。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.8\textwidth]{/Figs_ETC/footprint_rate}
+  \caption{LUD数据页访问特性：数据共享的规则应用程序（多个内核函数访问同一块数据；虚线代表每个内核函数的结束时间点）}
+  \label{fig:footprint_rate}
+\end{figure}
+
+
 从数据中我们得出四点观察。
 首先，内存占用大小是随着时间线性增长的；
-其次，有可能出现多个增长的阶段（如ATAX的内存占用情况（图6中的蓝色点线）），但每个阶段内存占用的增长趋势仍然是线性的；
+其次，有可能出现多个增长的阶段（如ATAX的内存占用情况（图~\ref{fig:footprint_rate}中的蓝色点线）），但每个阶段内存占用的增长趋势仍然是线性的；
 第三，GPU的单指令多线程工作模型显示，不同的warp执行相同的指令，但访问不同的数据。
 当所有这些warp并行地执行，共享全局内存带宽，则内存占用会增加直到这个阶段所有的数据被取回。
 这也解释了内存占用的增长为什么是线性的；
@@ -281,8 +335,8 @@ ETC的核心思想是为不同类型的应用程序采用不同的内存管理�
 
 \subsection{内存感知的并行度控制}
 
-如2.2xxxxx节讨论的，数据页层次的内存抖动会大大降低非规则GPGPU应用程序的性能。
-如图2b和3b所示，通常情况下，非规则应用程序的一个数据页仅被少量的线程块访问，不同的线程块访问的数据页也不一样。
+如~\ref{background}讨论的，数据页层次的内存抖动会大大降低非规则GPGPU应用程序的性能。
+如图~\ref{fig:Trace_1}（b）和~\ref{fig:Trace_2}（b）所示，通常情况下，非规则应用程序的一个数据页仅被少量的线程块访问，不同的线程块访问的数据页也不一样。
 当GPU许多非规则应用程序的线程块同时执行时，在线工作数据集快速增长，产生严重的内存抖动。
 这是传统页替换策略无法解决的。
 为了避免内存抖动，我们的核心思想是限制同时访问内存和取数据页的数量。
@@ -300,10 +354,17 @@ GPU并行度控制技术可以有两种实现方式，一种是线程块并行�
 在这个初始阶段，ETC框架很可能停掉了过多的GPU核心，导致较低的利用率；
 另一种情况是停掉的GPU核心数量太少，仍然导致内存抖动。
 因此在初始阶段之后，ETC框架需要基于观察到的内存利用率自适应地动态调整可执行的GPU核心数量。
-如图7xxxxxx所示，内存感知的并行度控制将GPU的执行划分为两个阶段：检测阶段和执行阶段。
+如图~\ref{fig:sm_throttling}所示，内存感知的并行度控制将GPU的执行划分为两个阶段：检测阶段和执行阶段。
 在检测阶段，ETC首先检测是否出现了逐出请求或缺页中断请求来判断初始阶段ETC的SM并行度控制是否过度。
 如果一个缺页中断请求被检测，或者检测阶段的运行时间结束，检测阶段将停止。
 一旦检测阶段停止，执行阶段开始，内存感知的并行性控制技术完成自适应地调整可运行的SM数量，不再调整，继续执行直到本阶段结束。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/sm_throttling}
+  \caption{ETC的内存感知的并行度控制策略）}
+  \label{fig:sm_throttling}
+\end{figure}
 
 如果检测阶段的结束是因为检测阶段的时间完成，并没有发生缺页中断。
 这说明当前的有效内存容量是足够当前的数据集的。
@@ -323,9 +384,10 @@ ETC框架需要限制更多GPU核心的执行，以减少在线工作数据集�
 
 通过内存感知的并行度控制方法，非规则应用程序的并行度被调整到在线工作数据集大小能完整地在内存中运行的状态。
 虽然并行度控制技术在一定程度上降低了线程级的并行度，我们发现它能大大减少CPU内存和GPU内存之间的数据搬运，并且大大恢复因为内存超额配置造成的性能下降。
-此外，这种并行度下降产生的性能损失，也可以通过结合容量压缩方法来挽回。这将在4.4xxxxxxxxx节中具体介绍。
+此外，这种并行度下降产生的性能损失，也可以通过结合容量压缩方法来挽回。这将在~\ref{compress}中具体介绍。
 
 \subsection{内存容量压缩}
+\label{compress}
 通过之前的介绍可以知道，在内存超额配置的情况下，主动数据页逐出技术可以有效提高规则应用程序的性能，
 而内存感知的并行度控制技术可以提升非规则应用程序的性能，但依然可能出现以上两种方法独立工作并不能提供足够的性能。
 首先，ETC的主动数据页逐出技术可以掩藏数据页逐出延迟，但是在多个内核函数数据共享的情况下，不能减少CPU内存和GPU内存之间数据页移动的次数；
@@ -340,8 +402,18 @@ ETC内存容量压缩技术的核心想法是，根据应用程序的类型，�
 LCP是一种低延迟的内存容量压缩框架。
 之前在CPU的应用已显示其在提升主存容量方面非常有效。
 我们发现LCP在GPU中性能会有严重影响，因为它需要额外的一次访存来获取存储在主存中的压缩相关元数据。
-如图8xxxxx所示，额外的一次LCP元数据访问可以导致额外的带宽需求。
+如图~\ref{fig:data_compression_overhead}所示，额外的一次LCP元数据访问可以导致额外的带宽需求。
 实验显示在无内存超额配置的情况下，这些应用程序在GPU的性能平均下降了13\%。
+
+
+
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/data_compression_overhead}
+  \caption{无限内存情况下的LCP内存容量压缩技术造成的性能损失}
+  \label{fig:data_compression_overhead}
+\end{figure}
 
 因此，对于ETC来说确定何时采用LCP压缩技术非常重要。
 内存容量压缩技术主要应用在两种类型的应用程序中，包括数据共享的规则应用程序和非规则应用程序。
@@ -356,12 +428,18 @@ LCP是一种低延迟的内存容量压缩框架。
 所有写入到GPU内存的数据将采用BDI压缩算法进行压缩，并通过LCP框架存入内存，非常简单高效。
 
 \subsection{ETC设计总结}
-图9是ETC的顶层设计方案，主要包括应用划分单元，主动数据页逐出单元、内存感知的并行度控制单元、以及主存容量压缩单元。
+图~\ref{fig:Overview}是ETC的顶层设计方案，主要包括应用划分单元，主动数据页逐出单元、内存感知的并行度控制单元、以及主存容量压缩单元。
 当待分配的总数据量大于GPU的物理内存时，ETC将被激活，应用程序划分器将开始根据GPU的硬件信息和编译信息识别应用程序类型。
 一旦应用程序被识别为规则应用程序，ETC将在GPU驱动的虚存管理单元开启主动数据页逐出功能。
 如果应用程序有数据共享，则同时开启内存容量压缩技术。
 如果应用程序被识别为非规则应用程序，ETC将同时开启内存感知的并行度控制技术和内存容量压缩技术，避免内存抖动现象的同时提升有效内存容量。
 
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/Overview}
+  \caption{ETC全局图。包含四个模块，分别是应用程序类别划分单元、主动数据页逐出单元、内存感知的并行度控制单元和内存容量压缩单元。}
+  \label{fig:Overview}
+\end{figure}
 
 
 \section{实验}
@@ -369,7 +447,35 @@ LCP是一种低延迟的内存容量压缩框架。
 \subsection{实验方法}
 
 我们修改了基于GPGPU-sim 3.2.2的Mosaic模拟器来评估ETC框架。
-GPU核心和存储系统的实验配置如表1所示。
+GPU核心和存储系统的实验配置如表~\ref{table:config}所示。
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ll}
+\hline \hline
+\multicolumn{2}{c}{\textbf{GPU核心配置}} \\ \hline
+\textbf{系统总览}           &  30个核心，每个核64个执行单元，8个存储分区\\
+\textbf{核配置}           &  1020 MHz，9级流水线 \\ & 每个warp含64个线程，GTO warp调度\\
+\textbf{私有一级缓存}    &  16KB，4路组相联，LRU \\ & L1缓存失效将合并请求发送到L2缓存\\
+\textbf{私有一级TLB}    &  每个核心含64个条目，全相联，LRU\\
+\textbf{共享二级缓存}   &  2MB，16路组相联，LRU \\ & 2个缓存块，每个内存块包含2个互连端口\\
+\textbf{共享二级TLB}   &  总计512个条目，1路组相联，LRU，2端口\\
+\textbf{页表查询缓存}    &  16路 8KB\\
+\hline
+\multicolumn{2}{c}{\textbf{存储配置}} \\
+\hline
+\textbf{DRAM内存}   & GDDR5 1674 MHz，8通道，每个Rank含8个Bank \\ & FR-FCFS调度，burst长度8\\
+\textbf{页表查询}   & 64个线程共享页表查询器，查询四级页表\\
+\textbf{统一虚拟内存配置} & 64KB数据页大小，2MB逐出数据大小\\ & 20$\mu$s 缺页中断处理时间， 16GB/s PCIe带宽  \\
+                              
+\hline
+\end{tabular}
+\caption{系统模拟配置}
+\label{table:config}
+\end{table}
+
+
+
 
 \textbf{在线按需取页和内存超额配置}。
 我们详尽地模拟了在CPU内存和GPU内存中按需取页数据迁移的过程，符合CUDA8.0的描述。
@@ -400,7 +506,7 @@ ETC框架采用了不同的设计参数。
 
 \subsubsection{性能结果}
 
-图10显示了不同类别应用程序以无限内存的基准模型为性能标准的相对实验结果。
+图~\ref{fig:data_etc}显示了不同类别应用程序以无限内存的基准模型为性能标准的相对实验结果。
 基于这些结果，我们得出了三点结论。
 首先，ETC在降低内存超额配置开销上作用显著。
 对于无数据共享的规则应用程序，其性能接近无限内存的基准模型情况。
@@ -410,23 +516,38 @@ ETC框架采用了不同的设计参数。
 第三，对于非规则的应用程序，ETC相比采用数据页预取的基准模型依然提升了2.7倍。
 我们给出结论，ETC框架对于内存超额配置的性能恢复非常有效。
 
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=0.8\textwidth]{/Figs_ETC/data_etc}
+  \caption{ETC相对于无限内存的基准模型的性能}
+  \label{fig:data_etc}
+\end{figure}
+
 \subsubsection{技术和应用程序细节分析}
 
 我们在本小节提供了关于每种ETC采用的技术对于每种类型应用程序影响的深度分析。
 
 \textbf{无数据共享的规则应用程序}。
-图11显示了主动数据页逐出技术和容量压缩技术对于无数据共享的规则应用程序的影响。
+图~\ref{fig:data_non_shared_regular_app}显示了主动数据页逐出技术和容量压缩技术对于无数据共享的规则应用程序的影响。
 我们做出三点观察。
 第一，当主动数据页逐出技术被触发，数据页逐出延迟几乎可以完全被掩藏。
 从实验中我们可以发现，对于无数据共享的规则应用程序中仅LPS因为逐出过多的页而导致性能离理想情况稍有下降。
-第二，由于页面限制图11并没有完全展现，无数据共享的规则应用程序并不能从内存感知的并行度控制技术中获得性能提升。
+第二，由于页面限制图~\ref{fig:data_non_shared_regular_app}并没有完全展现，无数据共享的规则应用程序并不能从内存感知的并行度控制技术中获得性能提升。
 因为该类型的应用程序在线工作数据集本身就非常小，无需降低并行度。同时该类型应用程序的主要开销来源为逐出的延迟。
 事实上，内存感知的并行度控制技术使得线程级并行下降的同时，延迟掩藏能力也会下降。
 第三，无数据共享的规则应用程序在采用了内存压缩技术后，性能比基准模型更低。
-这是因为额外的压缩相关元数据访问所带来的开销，这在4.4xxxxxx节已详细介绍的。
+这是因为额外的压缩相关元数据访问所带来的开销，这在~\ref{compress}节已详细介绍的。
+
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=0.8\textwidth]{/Figs_ETC/data_non_shared_regular_app}
+  \caption{无数据共享的规则应用程序的性能}
+  \label{fig:data_non_shared_regular_app}
+\end{figure}
 
 \textbf{数据共享的规则应用程序}。
-图12显示了数据共享的规则应用程序在主动数据页逐出技术、容量压缩技术和二者一起使用时的性能。
+图~\ref{fig:data_PE+CC}显示了数据共享的规则应用程序在主动数据页逐出技术、容量压缩技术和二者一起使用时的性能。
 我们得出了四点观察。
 第一，与无限内存的理想基准情况相比，数据页预取的基准模型在75\%和50\%的数据集能被物理内存容纳的情况下性能分别下降了52.2\%和74.1\%。
 第二，仅采用主动数据页逐出技术，性能相比于基准模型仅提升了9.3\%。
@@ -436,9 +557,17 @@ ETC框架采用了不同的设计参数。
 第四，当主动数据页逐出技术和内存压缩技术同时使用时，平均可以获得60.4\%的性能提升。
 我们得出以下结论，ETC框架提升了规则应用程序的性能，无论数据是否在多个内核函数之间共享。
 
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=0.8\textwidth]{/Figs_ETC/data_PE+CC}
+  \caption{数据共享的规则应用程序的性能}
+  \label{fig:data_PE+CC}
+\end{figure}
+
+
 \textbf{非规则应用程序}。
-图13和图14显示了每个非规则应用程序在ETC各个技术下的性能和总的数据页逐出次数。
-为评估ETC框架的并行度控制策略（MT），我们将它和一个简单的并行度控制策略进行比较，该策略静态地在开始执行时减少一半的GPU核心数量（如图13和14所示）。
+图~\ref{fig:data_num_eviction_75}和图~\ref{fig:data_num_eviction_50}显示了每个非规则应用程序在ETC各个技术下的性能和总的数据页逐出次数。
+为评估ETC框架的并行度控制策略（MT），我们将它和一个简单的并行度控制策略进行比较，该策略静态地在开始执行时减少一半的GPU核心数量（如图~\ref{fig:data_num_eviction_75}和图~\ref{fig:data_num_eviction_50}所示）。
 我们得出了三点观察。
 首先，简单的并行度控制方法在内存能容纳75\%的数据集的时候性能提升57.7\%。
 第二，当内存仅能容纳50\%的数据集的时候，简单的并行度控制方法变得不那么有效，降低了10.5\%的性能。
@@ -447,18 +576,43 @@ ETC框架采用了不同的设计参数。
 第三，我们的自适应调整的并行度策略在BICG和GESUMMV两个应用程序，且内存容量仅能容纳75\%的数据集的情况下性能不及简单的并行度控制方法。
 这是因为自适应调整需要一段时间才能达到最佳并行级别，而简单的并行度控制方法在这种情况恰好一次性达到了较好的并行级别。
 
-图15显示了1000万个时钟周期里非规则应用程序ATAX的缺页中断率。
+
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/data_num_eviction_75}
+  \caption{非规则应用程序的性能（75\%的内存占用可以被容纳进内存）}
+  \label{fig:data_num_eviction_75}
+\end{figure}
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/data_num_eviction_50}
+  \caption{非规则应用程序的性能（50\%的内存占用可以被容纳进内存）}
+  \label{fig:data_num_eviction_50}
+\end{figure}
+
+图~\ref{fig:ATAX_page_fault_rate}显示了1000万个时钟周期里非规则应用程序ATAX的缺页中断率。
 当内存超额配置且75\%的数据集能存放于内存中，会发生内存抖动，且频繁地发生缺页中断。
 相反地，当内存感知的并行度控制方法被激活时，缺页中断并不频繁。
 这说明我们的内存感知的并行度控制方法对于降低在线工作数据集的大小非常有效。
-同时，图13和14的数据页表明，内存感知的并行度控制方法可以减少数据页逐出的发生。
+同时，图~\ref{fig:data_num_eviction_75}和图~\ref{fig:data_num_eviction_50}的数据页表明，内存感知的并行度控制方法可以减少数据页逐出的发生。
+
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/ATAX_page_fault_rate}
+  \caption{ATAX的缺页中断率变化趋势}
+  \label{fig:ATAX_page_fault_rate}
+\end{figure}
+
 
 内存容量压缩策略对于非规则应用程序的有效程度取决于压缩率和GPU相对于应用程序的内存占用的比例。
 当一个应用程序完整的内存占用能够在压缩之后被物理内存容纳，缺页中断将不再发生。
-图13中BICG和MVT大大减少的数据页逐出数目说明这两个应用程序的压缩率足够高，使得内存能够完全容纳应用程序的内存占用。
+图~\ref{fig:data_num_eviction_75}中BICG和MVT大大减少的数据页逐出数目说明这两个应用程序的压缩率足够高，使得内存能够完全容纳应用程序的内存占用。
 相比于当前的数据页预取基准模型，内存压缩技术分别提升了51.8\%和203.6\%。
 相比于无限内存的理想基准情况，BICG和MVT分别恢复了85.7\%和88.7\%的性能。
-图14显示了GPU的内存仅能容纳50\%的数据集的性能情况。
+图~\ref{fig:data_num_eviction_50}显示了GPU的内存仅能容纳50\%的数据集的性能情况。
 即使使用了内存容量压缩技术，所有的应用程序都出现了内存抖动。
 我们的内存感知的并行度控制技术在和内存容量压缩技术同时使用时，相比于当前基准情况的性能提升了436\%。
 我们得出以下结论，采用内存容量压缩技术有助于提升内存超额配置下非规则应用程序的性能，然而缺页中断和内存抖动仍然会限制应用程序的性能。
@@ -470,20 +624,35 @@ ETC框架采用了不同的设计参数。
 
 总的来说，内存感知的并行度控制技术和内存容量压缩技术对于提升非规则应用程序的性能非常有效。
 因此，我们的ETC框架采用这两种技术。
-如图13和图14所示，采用了这两种技术的ETC框架能够提升270\%的非规则应用程序的性能。
+如图~\ref{fig:data_num_eviction_75}和图~\ref{fig:data_num_eviction_50}所示，采用了这两种技术的ETC框架能够提升270\%的非规则应用程序的性能。
 虽然并行度控制技术在一定程度上降低了线程级并行，但它能够有效降低内存超额配置的开销以及缓解内存抖动。
 
 \subsection{应用程序划分的精确度分析}
-如6.2xxxxxxxxx节所讨论的，ETC框架依赖于正确的应用程序类别划分。
-只有确定正确的应用程序类别才能选择最合适的策略（见4.1xxxxxx节）。
-图16比较了从5万个时钟周期取样的平均访存合并系数与每个应用程序的真实平均访存合并系数。
+ETC框架依赖于正确的应用程序类别划分。
+只有确定正确的应用程序类别才能选择最合适的策略（见~\ref{AC}）。
+图~\ref{fig:data_coalesce_factor}比较了从5万个时钟周期取样的平均访存合并系数与每个应用程序的真实平均访存合并系数。
 我们可以观察到规则应用程序和非规则应用程序的访存合并系数相差非常大。
 我们发现，将访存合并系数阈值设置在5到10之间都能使得ETC的应用程序类别划分准确读达到100\%。
 因此在本课题研究中我们将阈值设置为10。
 
-图17显示了每个warp指令中32个线程访问的平均数据页数目。
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/data_coalesce_factor}
+  \caption{不同应用程序的访存合并系数(缓存行合并)}
+  \label{fig:data_coalesce_factor}
+\end{figure}
+
+
+图~\ref{fig:data_page_coalesce_factor}显示了每个warp指令中32个线程访问的平均数据页数目。
 我们发现非规则应用程序的warp一般会访问多个数据页，而几乎大多数的规则应用程序一般只访问一个数据页。
 因此，采用数据页级别的访存合并系数与缓存行级别的访存合并系数来判定不同的应用程序类别均有非常高的准确率。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=\textwidth]{/Figs_ETC/data_page_coalesce_factor}
+  \caption{不同应用程序的访存合并系数(数据页合并)}
+  \label{fig:data_page_coalesce_factor}
+\end{figure}
 
 \subsection{敏感度分析}
 在这一节我们测试了不同敏感度下ETC框架的性能。
@@ -492,25 +661,53 @@ ETC框架采用了不同的设计参数。
 \textbf{内存感知的并行度控制度}。
 每个阶段并行度提高或降低所变化的GPU核心的数量称为并行度控制的度。
 它能够直接影响应用程序的性能。
-图18显示了每个阶段调节不同的GPU核心数（每次增加或减少的GPU核心数量）的相对性能。
-基于图18，我们得出两点观察。
+图~\ref{fig:data_throttle_SMs_sensitive}和图~\ref{fig:data_release_SMs_sensitive}显示了每个阶段调节不同的GPU核心数（每次增加或减少的GPU核心数量）的相对性能。
+基于图~\ref{fig:data_throttle_SMs_sensitive}和图~\ref{fig:data_release_SMs_sensitive}，我们得出两点观察。
 第一，我们的内存感知的并行度控制策略在并行度下降和上升度均为1时得到最高的性能。
 这说明细粒度的调整效果最好；
 第二，相比于并行度上升，我们观察到ETC框架的性能对于并行度下降更加敏感，因为缺页中断产生的开销相比于线程级并行的下降产生的开销更大。
 
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_ETC/data_throttle_SMs_sensitive}
+  \caption{ETC的性能与减少GPU核心数量的关系}
+  \label{fig:data_throttle_SMs_sensitive}
+\end{figure}
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_ETC/data_release_SMs_sensitive}
+  \caption{ETC的性能与增加GPU核心数量的关系}
+  \label{fig:data_release_SMs_sensitive}
+\end{figure}
+
 \textbf{缺页中断延迟}。
-图19显示了GPGPU的应用程序在不同的缺页中断处理延迟下的性能。
+图~\ref{fig:fault_latency}显示了GPGPU的应用程序在不同的缺页中断处理延迟下的性能。
 实验设置缺页中断延迟从20$\mu$s到50$\mu$s不等。
 实验结果显示的是相对于缺页中断延迟为20$\mu$s的性能。
 我们观察到当缺页中断延迟从20$\mu$s提高到50$\mu$s，平均性能下降了31.2\%。
 这些数据说明隐藏页逐出开销对于恢复内存超额配置下的性能非常重要，因为缺页中断延迟是主要的性能瓶颈。
 
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_ETC/fault_latency}
+  \caption{ETC的性能与缺页中断延迟的关系}
+  \label{fig:fault_latency}
+\end{figure}
+
 \textbf{压缩率}。
 主存容量压缩技术影响到GPU主存能够容纳的数据页的数目。
-图20显示了所有应用程序采用不同的合成压缩率下的性能，相对于该应用在没有采用压缩技术的性能。
+图~\ref{fig:data_compression_ratio_sensitive}显示了所有应用程序采用不同的合成压缩率下的性能，相对于该应用在没有采用压缩技术的性能。
 该实验在物理内存仅能容纳下50\%的内存占用的内存超额配置下进行。
 实验结果显示GPU性能随着内存压缩率的增加而线性提高。
 当所有的内存占用能够被GPU内存容纳时，性能有大幅度提升（压缩率为2）。
+
+\begin{figure}[htbp] % use float package if you want it here
+  \centering
+  \includegraphics[width=.7\textwidth]{/Figs_ETC/data_compression_ratio_sensitive}
+  \caption{ETC的性能与内存容量压缩率的关系}
+  \label{fig:data_compression_ratio_sensitive}
+\end{figure}
 
 \subsection{硬件开销}
 我们分析ETC框架的每个部分所耗费的硬件开销。
