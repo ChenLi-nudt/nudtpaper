@@ -1,21 +1,103 @@
 \begin{cabstract}
-国防科学技术大学是一所直属中央军委的综合性大学。1984年,学校经国务院、中央军委和教育部批准首批成立研究生院，%
-肩负着为全军培养高级科学和工程技术人才与指挥人才，培训高级领导干部，从事先进武器装备和国防关键技术研究的重要任务。%
-国防科技大学是全国重点大学，也是全国首批进入国家“211工程” 建设并获中央专项经费支持的全国重点院校之一。%
-学校前身是1953年创建于哈尔滨的中国人民解放军军事工程学院，简称“哈军工”。
+为了延缓摩尔定律的终结，人们开始从半导体技术以外的方向来提升芯片的性能。
+在这些新方向中，堆叠技术和异构众核加速技术已经逐渐被认可，并得到了广泛的应用。
+堆叠异构系统如今已成为数据中心重要的硬件基础，随着云计算的不断发展和广泛应用，堆叠异构系统开始为云计算提供强大的计算加速能力。
+
+然而，云计算的软硬件资源以服务的形式同时提供给大量租户，而多租户之间完全隔离。
+用户难以从纯软件角度在云环境中针对硬件特征进行性能优化。
+因此，应用透明的性能优化策略显得尤为重要。
+
+本文针对堆叠异构系统中的内存超额配置造成的性能骤降问题、多任务抢占的上下文切换高开销问题和堆叠互连网络结构的负载不均衡问题，
+提出了一系列应用透明的策略，在不修改应用程序代码的前提下，高效地优化应用程序的性能。
+本文的主要研究成果及创新点如下：
+
+（1）提出了一种内存超额配置管理框架
+
+如今云服务提供商往往将超出其硬件资源的服务提供给用户，以提高资源利用率。
+但是，对于一些对资源需求较高的用户（如深度学习训练），很容易出现内存紧缺的问题。
+当代GPU已经能够支持内存超额配置，但是我们实验发现在内存超额配置的情况下，应用程序遭受了严重的性能损失，亟需一种应用透明策略来应对。
+本文研究了多种应用程序的访存特性，为不同的内存超额配置开销提出了主动数据页逐出技术、内存感知的并行度管理策略和内存容量压缩策略。
+本文提出了一种内存超额配置管理框架，在线判断应用程序的类别，并选择相应的策略组合来实现内存超额配置下的性能提升。
+实验表明，本文的内存超额配置管理框架能够大幅度恢复由于内存超额配置导致的性能损失。
+
+（2）提出了一种动态采用检查点备份技术的GPU主动抢占策略
+
+多任务处理机制已经在堆叠异构系统中广泛应用，
+而抢占机制则是多任务处理中必不可少的一环。
+抢占机制能够满足不同应用程序对于服务质量的要求，同时也为多任务切换提供了更多选择。
+然而，GPU由于其单指令多线程的特性，其上下文大小相比于CPU的上下文大小显著增加，上下文切换开销也相应增大。
+本文为解决这一问题，观察了GPU内核函数的启动过程，动态采用检查点备份的主动抢占机制来降低上下文切换的开销。
+实验表明，本文的主动抢占机制可以将抢占延迟从平均8.9$\mu$s降低到平均3.6$\mu$s，应用程序也因此更容易满足服务质量的要求。
+
+（3）提出了一种动态延迟感知的2.5维堆叠片上网络负载均衡策略
+
+2.5维堆叠片上网络是一种面向硅中介层堆叠的新型结构，利用硅中介层上的大量连线资源，新增加一层网络结构分担网络流量。
+但是，当前的设计将上层网络用于计算核心节点之间的协议通信，而下层网络用于访存通信。
+我们对于PARSEC测试集的测试发现，上下层网络会出现严重的负载不均衡现象，并且路径拥塞情况有助于判断网络拥塞与否。
+因此，本文提出了一种延迟感知的2.5维堆叠片上网络负载均衡策略，通过延迟感知来判断拥塞路径，并为报文的路径做出路由选择。
+实验表明，本文提出的负载均衡策略相比于基准方法有45\%的性能提升。
+
+综上所述，本文面向堆叠异构系统，紧紧围绕``应用透明''的需求，
+针对内存超额配置、多任务切换管理和网络负载不均衡问题，研究了产生应用程序性能损失的原因、应用程序的特征和硬件特性，
+分别提出了有效解决方案，并都取得了系统性能的提升。
+因此，本文的成果在理论上可以为软硬件设计提供了指导，同时具有重要的工程价值。
+
 \end{cabstract}
-\ckeywords{国防科学技术大学; 211; 哈军工}
+\ckeywords{堆叠技术；异构系统；应用透明；内存超额配置；虚拟内存；多任务切换；片上网络；负载均衡}
 
 \begin{eabstract}
-National University of Defense Technology is a comprehensive national key university based in Changsha, %
-Hunan Province, China. It is under the dual supervision of the Ministry of National Defense %
-and the Ministry of Education, designated for Project 211 and Project 985, %
-the two national plans for facilitating the development of Chinese higher education. %
+In order to delay the ending of Moore's law, more emerging techniques appear to improve the chip performance in new ways, rather than traditional semiconductor methods.
+In these new directions, stacking technology and heterogeneous many-core acceleration technology have been gaining more tractions and they are widely used in commercial products.
+Stacked heterogeneous systems become important hardware resources in data centers. 
+With the advancement and widespread application of cloud computing, stacked heterogeneous systems start providing powerful abilities of computing acceleration for cloud computing.
 
-NUDT was originally founded in 1953 as the Military Academy of Engineering in Harbin of Heilongjiang Province. %
-In 1970 the Academy of Engineering moved southwards to Changsha and was renamed Changsha Institute of Technology.%
- The Institute changed its name to National University of Defense Technology in 1978.
+However, the hardware and software resources of cloud computing are provided to a lot of users as services.
+Due to the complete isolation among multi-tenancy, it is difficult for programmers to perform application optimization in cloud environments from software perspective.
+Therefore, it is important to apply application-transparent performance optimization strategies based on hardware features.
+
+This thesis addresses three issues, including the performance degradation caused by memory oversubscription in a heterogeneous system, the high overhead of context-switching in multi-tasking preemption, and the load imbalance of the stacked interconnect network.
+Several application-transparent strategies are proposed to solve these issues and efficiently optimize the performance without modifying the applications' code.
+The main contributions and innovations of this paper are shown as follows:
+
+(1) a framework for memory oversubscription management
+
+Nowadays, cloud providers usually virtualizes costly hardware resources for users to increase the resource utilization.
+However, it may cause the memory shortage for some memory-hungry users (such as machine learning training).
+Memory oversubscription has been enabled in modern GPUs.
+However, our measurements on a real GPUs shows that memory oversubscription can casue severe performance degradation.
+An application-transparent mechanism is urgently needed.
+In this thesis, we investigate the memory access behaviors of different applications, 
+and we propose proactive eviction, memory-aware throttling and capacity compression to address different overheads.
+Our framework for memory oversubscription management is proposed to select the most effective combination of these techniques to recover the performance loss caused by memory oversubscription according to the application type. 
+Experimental results show that our framework is effective at improving the performance under the memory oversubscription. 
+
+(2) a dynamic and proactive preemption preemption mechnism using checkpointing
+
+Multi-tasking has been widely used in stacked heterogeneous systems.
+The preemption support is a necessary technique for multitasking.
+The preemption can satisfy the quality of service requirements of different applications, and it provides more options for multi-tasking switching as well.
+However, due to its SIMT model, the GPU has much larger context size compared with CPU, and the overhead of context switching is also increasing.
+In order to address this issue, we observe the launching process of GPU kernels, and dynamically adopts the proactive preemption mechanism using checkpointing to reduce the overhead of context switching.
+Experimental results show that our proactive preemption mechanism can reduce the latency from 8.9$\mu$s to 3.6$\mu$s, making it easier to meet quality of service requirements.
+
+(3) a dynamic latency-aware load-balancing strategy in 2.5D NoC architecture
+
+The 2.5D stacking on-chip network is an emerging structure for silicon interposer architecture. 
+It utilizes the abundant metal resources on the silicon interposer to create a new layer of network.
+As a result, it can hold those congested network traffic.
+However, in current design, the protocol-level traffic among cores is transfered on upper level network, while the memory traffic is transfered on the lower layer.
+Our measurements on the PARSEC benchmark show that there is a severe load imbalance between the upper and lower layers.
+We find that the accurate network congested information can be observed from the congested path. 
+Therefore, this thesis proposes a latency-aware load balancing strategy in 2.5D NoC architecture.
+The congestion path is determined by the latency, and the path selection of packets is made.
+Experimental results show that our load balancing strategy has a 45\% performance improvement over the baseline.
+
+In summary, this thesis focuses on the stacking heterogeneous system. 
+It aims the need for ``application transparency''.
+For issues of memory oversubscription, multi-tasking switching management and network load imbalance, the reason of these performance losses, application characteristics and hardware features are studied.
+Finally, we propose effective solutions to address these issues and the system performance are improved.
+Therefore, this thesis has both engineering value and theoretical significance.
 
 \end{eabstract}
-\ekeywords{NUDT; MND; ME}
+\ekeywords{Stacking Technology, Heterogeneous System, Application-transparent, Memory Oversubscription, Virtual Memory, Multi-task Switch, Network-on-Chips, Load-balancing}
 

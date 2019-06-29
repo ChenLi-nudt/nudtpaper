@@ -27,14 +27,6 @@
   organization={ACM}
 }
 
-@inproceedings{jouppi2017datacenter,
-  title={In-datacenter performance analysis of a tensor processing unit},
-  author={Jouppi, Norman P and Young, Cliff and Patil, Nishant and Patterson, David and Agrawal, Gaurav and Bajwa, Raminder and Bates, Sarah and Bhatia, Suresh and Boden, Nan and Borchers, Al and others},
-  booktitle={2017 ACM/IEEE 44th Annual International Symposium on Computer Architecture (ISCA)},
-  pages={1--12},
-  year={2017},
-  organization={IEEE}
-}
 
 @article{sutherland1964sketchpad,
   title={Sketchpad a man-machine graphical communication system},
@@ -117,6 +109,14 @@
   Year                     = {2009},
   Organization             = {IEEE},
   Pages                    = {86--97}
+}
+
+@book{Xie:2015:DA:2842825,
+ author = {Xie, Yuan and Zhao, Jishen},
+ title = {Die-stacking Architecture},
+ year = {2015},
+ isbn = {162705765X, 9781627057653},
+ publisher = {Morgan \& Claypool Publishers},
 }
 
 @InProceedings{black2013stacking,
@@ -315,6 +315,25 @@
   Pages                    = {1--12}
 }
 
+@article{Lawson:1979:BLA:355841.355847,
+ author = {Lawson, C. L. and Hanson, R. J. and Kincaid, D. R. and Krogh, F. T.},
+ title = {Basic Linear Algebra Subprograms for Fortran Usage},
+ journal = {ACM Trans. Math. Softw.},
+ issue_date = {Sept. 1979},
+ volume = {5},
+ number = {3},
+ month = sep,
+ year = {1979},
+ issn = {0098-3500},
+ pages = {308--323},
+ numpages = {16},
+ url = {http://doi.acm.org/10.1145/355841.355847},
+ doi = {10.1145/355841.355847},
+ acmid = {355847},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+} 
+
 @InProceedings{ma2011dbar,
   Title                    = {DBAR: an efficient routing algorithm to support multiple concurrent applications in networks-on-chip},
   Author                   = {Ma, Sheng and Jerger, Natalie Enright and Wang, Zhiying},
@@ -355,16 +374,6 @@
   Timestamp                = {2015.11.18}
 }
 
-@Manual{NTP100,
-  Title                    = {NVIDIA Tesla P100},
-  Author                   = {NVIDIA},
-  Month                    = {April},
-  Year                     = {2016},
-
-  Keywords                 = {The Most Advanced Datacenter Accelerator Ever Built Featuring Pascal GP100, the World’s Fastest GPU},
-  Owner                    = {lichen},
-  Timestamp                = {2016.04.25}
-}
 
 @Manual{nvi2015pascal,
   Title                    = {NVLink, Pascal and Stacked Memory: Feeding the Appetite for Big Data. http://devblogs.nvidia.com/parallelforall},
@@ -495,6 +504,15 @@
   year={2013}
 }
 
+@inproceedings{kim2014accelerating,
+  title={Accelerating irregular algorithms on gpgpus using fine-grain hardware worklists},
+  author={Kim, Ji and Batten, Christopher},
+  booktitle={Proceedings of the 47th Annual IEEE/ACM International Symposium on Microarchitecture},
+  pages={75--87},
+  year={2014},
+  organization={IEEE Computer Society}
+}
+
 @article{park2015chimera,
   title={Chimera: Collaborative preemption for multitasking on a shared GPU},
   author={Park, Jason Jong Kyu and Park, Yongjun and Mahlke, Scott},
@@ -504,23 +522,6 @@
   pages={593--606},
   year={2015},
   publisher={ACM}
-}
-
-@inproceedings{che2009rodinia,
-  title={Rodinia: A benchmark suite for heterogeneous computing},
-  author={Che, Shuai and Boyer, Michael and Meng, Jiayuan and Tarjan, David and Sheaffer, Jeremy W and Lee, Sang-Ha and Skadron, Kevin},
-  booktitle={Workload Characterization, 2009. IISWC 2009. IEEE International Symposium on},
-  pages={44--54},
-  year={2009},
-  organization={Ieee}
-}
-
-@article{stratton2012parboil,
-  title={Parboil: A revised benchmark suite for scientific and commercial throughput computing},
-  author={Stratton, John A and Rodrigues, Christopher and Sung, I-Jui and Obeid, Nady and Chang, Li-Wen and Anssari, Nasser and Liu, Geng Daniel and Hwu, Wen-Mei W},
-  journal={Center for Reliable and High-Performance Computing},
-  volume={127},
-  year={2012}
 }
 
 @inproceedings{li2007quantifying,
@@ -654,6 +655,15 @@
   publisher={ACM}
 }
 
+@inproceedings{wang2016laperm,
+  title={Laperm: Locality aware scheduler for dynamic parallelism on gpus},
+  author={Wang, Jin and Rubin, Norm and Sidelnik, Albert and Yalamanchili, Sudhakar},
+  booktitle={2016 ACM/IEEE 43rd Annual International Symposium on Computer Architecture (ISCA)},
+  pages={583--595},
+  year={2016},
+  organization={IEEE}
+}
+
 @article{shi2012vcuda,
   title={vCUDA: GPU-accelerated high-performance computing in virtual machines},
   author={Shi, Lin and Chen, Hao and Sun, Jianhua and Li, Kenli},
@@ -688,11 +698,6 @@
   Keywords={Nvidia Profiler}
 }
 
-@article{nvidia2012nvidias,
-  title={Nvidias next generation cuda compute architecture: Kepler gk110},
-  author={Nvidia, C},
-  journal={Whitepaper},
-  year={2012}
 }
 
 @article{nvidia980s,
@@ -702,15 +707,8 @@
   year={2014}
 }
 
-@article{NTP100,
-  title={Nvidia Tesla P100 Whitepaper},
-  author={Nvidia, C},
-  journal={Whitepaper},
-  Month={April},
-  year={2016}
-}
 
-@inproceedings{bakhoda2009analyzing,
+@inproceedings{gpgpu-sim,
   title={Analyzing CUDA workloads using a detailed GPU simulator},
   author={Bakhoda, Ali and Yuan, George L and Fung, Wilson WL and Wong, Henry and Aamodt, Tor M},
   booktitle={Performance Analysis of Systems and Software, 2009. ISPASS 2009. IEEE International Symposium on},
@@ -1711,14 +1709,6 @@ year={2016},
   year		= {2016}
 }
 
-@InProceedings{	  jayneel-micro14,
-  author	= {Jayneel Gandhi and Arkaprava Basu and Mark D. Hill and
-		  Michael M. Swift},
-  title		= {{Efficient Memory Virtualization}},
-  booktitle	= {MICRO},
-  year		= {2014}
-}
-
 @Book{		  pentium-pro,
   author	= {Shanley, Tom},
   title		= {{Pentium Pro Processor System Architecture}},
@@ -1851,7 +1841,7 @@ month={Jan},}
 
 
 @article{hbm2,
-  author = {{Hybrid Memoty Cube Consortium}},
+  author = {{JEDEC}},
   title		= {{High-Bandwidth Memory White Paper}},
   howpublished	= "\url{http://560422.hs-sites.com/high-bandwidth-memory-white-paper-start-your-hbm-2-5d-design-today}"
 }
@@ -2135,6 +2125,14 @@ howpublished = "\url{http://docs.nvidia.com/cuda/maxwell-tuning-guide/#axzz4dfvW
 }
 
 
+@inproceedings{power2013heterogeneous,
+  title={Heterogeneous system coherence for integrated CPU-GPU systems},
+  author={Power, Jason and Basu, Arkaprava and Gu, Junli and Puthoor, Sooraj and Beckmann, Bradford M and Hill, Mark D and Reinhardt, Steven K and Wood, David A},
+  booktitle={Proceedings of the 46th Annual IEEE/ACM International Symposium on Microarchitecture},
+  pages={457--467},
+  year={2013},
+  organization={ACM}
+}
 
 @misc{maxwell,
 key = "NVIDIA",
@@ -2144,6 +2142,14 @@ year = 2014,
 howpublished = "\url{http://international.download.nvidia.com/geforce-com/international/pdfs/GeForce-GTX-750-Ti-Whitepaper.pdf}"
 }
 
+
+@inproceedings{gelado2010asymmetric,
+  title={An asymmetric distributed shared memory model for heterogeneous parallel systems},
+  author={Gelado Fernandez, Isaac and Cabezas, Javier and Navarro, Nacho and Stone, John E and Patel, Sanjay and Hwu, Wen-mei W},
+  booktitle={15th International Conference on Architectural Support for Programming Languages and Operating Systems},
+  pages={347--358},
+  year={2010}
+}
 
 @INPROCEEDINGS{memattack,
     author = {Moscibroda, T. and Mutlu, Onur},
@@ -2304,20 +2310,6 @@ year = 2015,
 howpublished = "\url{https://docs.nvidia.com/deploy/pdf/CUDA_Multi_Process_Service_Overview.pdf}"
 }
 
-@misc{amd-io-virt,
-  title         = {{AMD I/O Virtualization Technology (IOMMU) Specification}},
-  Author  = {{Advanced Micro Devices, Inc.}},
-  howpublished          = {\url{http://support.amd.com/TechDocs/48882_IOMMU.pdf}},
-  year = 2016,
-}
-@misc{intel-io-virt,
-  title         = {{Intel Virtualization Technology for Directed I/O}},
-  author  = {{Intel Corp.}},
-  howpublished          = {\url{http://www.intel.com/content/dam/www/public/us/en/documents/product-specifications/vt-directed-io-spec.pdf}},
-  year = 2016,
-}
-
-
 
 @misc{lulesh-origin,
   title={{LULESH 2.0 Updates and Changes}},
@@ -2367,32 +2359,6 @@ howpublished = "\url{https://www.nvidia.com/content/PDF/kepler/Tesla-K40-Active-
 }
 
 
-
-@misc{pascal,
-key = "NVIDIA",
-author = "{NVIDIA Corp.}",
-title = {{NVIDIA Tesla P100}},
-year = 2016,
-howpublished = "\url{https://images.nvidia.com/content/pdf/tesla/whitepaper/pascal-architecture-whitepaper.pdf}"
-}
-
-
-@inproceedings{rmm,
- author = {Karakostas, Vasileios and Gandhi, Jayneel and Ayar, Furkan and Cristal, Adri\'{a}n and Hill, Mark D. and McKinley, Kathryn S. and Nemirovsky, Mario and Swift, Michael M. and \"{U}nsal, Osman},
- title = {{Redundant Memory Mappings for Fast Access to Large Memories}},
- booktitle = {ISCA},
- year = {2015},
-} 
-
-
-@misc{tensorflow,
-title = {{TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems}},
-author  = {Martín Abadi and Ashish Agarwal and Paul Barham and Eugene Brevdo and Zhifeng Chen and Craig Citro and Greg Corrado and Andy Davis and Jeffrey Dean and Matthieu Devin and Sanjay Ghemawat and Ian Goodfellow and Andrew Harp and Geoffrey Irving and Michael Isard and Yangqing Jia and Rafal Jozefowicz and Lukasz Kaiser and Manjunath Kudlur and Josh Levenberg and Dan Mane and Rajat Monga and Sherry Moore and Derek Murray and Chris Olah and Mike Schuster and Jonathon Shlens and Benoit Steiner and Ilya Sutskever and Kunal Talwar and Paul Tucker and Vincent Vanhoucke and Vijay Vasudevan and Fernanda Viegas and Oriol Vinyals and Pete Warden and Martin Wattenberg and Martin Wicke and Yuan Yu and Xiaoqiang Zheng},
-year  = 2015,
-howpublished = {\url{http://download.tensorflow.org/paper/whitepaper2015.pdf}}
-}
-
-
 @inproceedings{vmCUDA,
  author = {Vu, Lan and Sivaraman, Hari and Bidarkar, Rishi},
  title = {{GPU Virtualization for High Performance General Purpose Computing on the ESX Hypervisor}},
@@ -2406,12 +2372,6 @@ howpublished = {\url{http://download.tensorflow.org/paper/whitepaper2015.pdf}}
  year = {1994},
 } 
 
-@inproceedings{mafia,
- author = {Jog, Adwait and Kayiran, Onur and Kesten, Tuba and Pattnaik, Ashutosh and Bolotin, Evgeny and Chatterjee, Niladrish and Keckler, Stephen W. and Kandemir, Mahmut T. and Das, Chita R.},
- title = {{Anatomy of GPU Memory System for Multi-Application Execution}},
- booktitle = {MEMSYS},
- year = {2015},
-} 
 
 @inproceedings{cacti,
  author = {Muralimanohar, Naveen and Balasubramonian, Rajeev and Jouppi, Norm},
@@ -2521,28 +2481,6 @@ title={{iGPU: Exception Support and Speculative Execution on GPUs}},
 year={2012}, 
 }
 
-@inproceedings{tianhao-hpca16,
-  title={{Towards High Performance Paged Memory for GPUs}},
-  author={Tianhao Zheng and David Nellans and Arslan Zulfiqar and Mark Stephenson and Stephen W. Keckler},
-  booktitle={HPCA},
-  year={2016},
-}
-
-@inproceedings{powers-hpca14,
-  title={{Supporting x86-64 Address Translation for 100s of GPU Lanes}},
-  author={Power, Jonathan and Hill, Mark D and Wood, David A},
-  booktitle={HPCA},
-  year={2014},
-}
-
-@inproceedings{abhishek-ispass16,
- author = {Jan Vesely and Arkaprava Basu and Mark Oskin and Gabriel H. Loh and Abhishek Bhattacharjee},
- title = {{Observations and Opportunities in Architecting Shared Virtual Memory for Heterogeneous Systems}},
- booktitle = {ISPASS},
- year = {2016},
-} 
-
-
 
 %%%%%% From proposal %%%%
 
@@ -2560,12 +2498,6 @@ title={{Improving DRAM Performance by Parallelizing Refreshes with Accesses }},
 } 
 
 
-@inproceedings{onur-pact,
- author = {Kayiran, Onur and Jog, Adwait and Kandemir, Mahmut Taylan and Das, Chita},
- title = {{Neither More nor Less: Optimizing Thread-level Parallelism for GPGPUs}},
- booktitle = {PACT},
- year = {2013},
-} 
 
 @inproceedings{pass-through,
  author = {Tian, Kun and Dong, Yaozu and Cowperthwaite, David},
@@ -2634,13 +2566,6 @@ title={{Improving DRAM Performance by Parallelizing Refreshes with Accesses }},
 }
 
 
-
-@INPROCEEDINGS{gpgpu-sim,
-author={Bakhoda, A. and Yuan, G.L. and Fung, W.W.L. and Wong, H. and Aamodt, T.M.},
-booktitle={ISPASS},
-title={{Analyzing CUDA Workloads Using a Detailed GPU Simulator}},
-year={2009},
-}
 
 @article{tobias-stock,
 	Art_Number = {093024},
@@ -2897,12 +2822,6 @@ year = {1981},
   year={2016},
 }
 
-@inproceedings{caba,
- author = {Vijaykumar, Nandita and Pekhimenko, Gennady and Jog, Adwait and Bhowmick, Abhishek and Ausavarungnirun, Rachata and Das, Chita and Kandemir, Mahmut and Mowry, Todd C. and Mutlu, Onur},
- title = {{A Case for Core-Assisted Bottleneck Acceleration in {GPUs}: Enabling Flexible Data Compression with Assist Warps}},
- booktitle = {ISCA},
- year = {2015},
-} 
 
 @inproceedings{li-sc15,
 title = {{Adaptive and Transparent Cache Bypassing for {GPUs}}},
@@ -3106,13 +3025,6 @@ year={2014},
  year = {2012},
 } 
 
-@inproceedings{nmnl-pact13,
-  author    = {Onur Kay{\i}ran and Adwait Jog and Mahmut T. Kandemir and Chita R. Das},
-  title     = {{Neither More Nor Less: Optimizing Thread-Level Parallelism for GPGPUs}},
-  booktitle = {PACT},
-  year      = {2013},
-}
-
 @inproceedings{osp-isca13,
  author    = {Adwait Jog and Onur Kay{\i}ran and Asit K. Mishra and Mahmut T. Kandemir and Onur Mutlu and Ravishankar Iyer and Chita R. Das},
  title     = {{Orchestrated Scheduling and Prefetching for GPGPUs}},
@@ -3192,14 +3104,6 @@ year={2010},
  year = {2012},
 } 
 
-
-@INPROCEEDINGS{warp-level-div, 
-author={Ping Xiang and Yi Yang and Huiyang Zhou}, 
-booktitle={HPCA}, 
-title={{Warp-Level Divergence in {GPUs}: Characterization, Impact, and Mitigation}}, 
-year={2014}, 
-}
-
 @inproceedings{han-reducing-div,
  author = {Han, Tianyi David and Abdelrahman, Tarek S.},
  title = {{Reducing Branch Divergence in {GPU} Programs}},
@@ -3236,65 +3140,6 @@ year={2009},
   month         = {July},
   year          = {2001}
 }
-
-@INPROCEEDINGS{dwf, 
-author={Fung, W.W.L. and Sham, I. and Yuan, G. and Aamodt, T.M.}, 
-booktitle={MICRO}, 
-title={{Dynamic Warp Formation and Scheduling for Efficient GPU Control Flow}}, 
-year={2007}, 
-}
-
-@inproceedings{tbc,
-  author    = {Wilson W. L. Fung and
-               Tor M. Aamodt},
-  title     = {{Thread Block Compaction for Efficient SIMT Control Flow}},
-  booktitle = {HPCA},
-  year      = {2011},
-}
-
-@inproceedings{Srinivasan-micro,
-  author    = {Srikanth T. Srinivasan and
-               Alvin R. Lebeck},
-  title     = {Load Latency Tolerance in Dynamically Scheduled Processors},
-  booktitle = {MICRO},
-  year      = {1998},
-}
-
-
-@inproceedings{gebhart,
- author = {Gebhart, Mark and Johnson, Daniel R. and Tarjan, David and Keckler, Stephen W. and Dally, William J. and Lindholm, Erik and Skadron, Kevin},
- title = {{Energy-Efficient Mechanisms for Managing Thread Context in Throughput Processors}},
- booktitle = {ISCA},
- year = {2011},
-}
-
-@INPROCEEDINGS{sudha-poster, 
-author={Hassan, S.M. and Choudhary, D. and Rasquinha, M. and Yalamanchili, S.}, 
-booktitle={PACT}, 
-title={{Regulating Locality vs. Parallelism Tradeoffs in Multiple Memory Controller Environments}}, 
-year={2011}, 
-}
-
-@inproceedings{mars,
- author = {He, Bingsheng and Fang, Wenbin and Luo, Qiong and Govindaraju, Naga K. and Wang, Tuyong},
- title = {{Mars: A MapReduce Framework on Graphics Processors}},
- booktitle = {PACT},
- year = {2008},
-} 
-
-@inproceedings{erez-blp,
-    AUTHOR = { Min Kyu Jeong and Doe Hyun Yoon and Dam Sunwoo and Michael Sullivan and Ikhwan Lee and Mattan Erez },
-    TITLE = {{ Balancing DRAM Locality and Parallelism in Shared Memory CMP Systems }},
-    BOOKTITLE = {HPCA},
-    YEAR = {2012},
-}
-
-@inproceedings{owl-asplos13,
- author = {Adwait Jog and Onur Kay{\i}ran and Nachiappan C. Nachiappan and Asit K. Mishra and Mahmut T. Kandemir and Onur Mutlu and Ravishankar Iyer and Chita R. Das},
- title = {{OWL: Cooperative Thread Array Aware Scheduling Techniques for Improving GPGPU Performance}},
- booktitle = {ASPLOS},
- year = {2013},
-} 
 
 @techreport{parboil,
   author        = {Stratton, J. A. and Rodrigues, C. and Sung, I. J. and Obeid, N. and Chang, L. W. and Anssari, N. and Liu, G. D. and Hwu, W. W.},
@@ -3477,12 +3322,6 @@ BOOKTITLE = {ISCA},
 YEAR = {2012}
 }
 
-@inproceedings{fr-fcfs,
-author = {Rixner, Scott and Dally, William J. and Kapasi, Ujval J. and Mattson, Peter and Owens, John D.},
-title = {{Memory Access Scheduling}},
-booktitle = {ISCA},
-year = {2000},
-}
 
 
 @inproceedings{rhu-micro13,
@@ -3520,12 +3359,6 @@ year={2009},
   year={2009}
 }
 
-@misc{frfcfs-patent,
-  author        = "William K. Zuravleff and Timothy Robinson",
-  title         = {{Controller for a Synchronous DRAM That Maximizes Throughput by Allowing Memory Requests and Commands to Be Issued Out of Order}},
-  howpublished	= {U.S. Patent Number 5,630,096},
-  year          = "1997"
-}
 
 @inproceedings{compass,
  author = {Woo, Dong Hyuk and Lee, Hsien-Hsin S.},
@@ -3858,32 +3691,7 @@ year={2013},
   organization={ACM}
 }
 
-@article{keckler2011gpus,
-  title={{GPUs and the future of parallel computing}},
-  author={Keckler, Stephen W and Dally, William J and Khailany, Brucek and Garland, Michael and Glasco, David},
-  journal={Micro, IEEE},
-  volume={31},
-  number={5},
-  pages={7--17},
-  year={2011},
-  publisher={IEEE}
-}
 
-@inproceedings{kumar2006core,
-  title={Core architecture optimization for heterogeneous chip multiprocessors},
-  author={Kumar, Rakesh and Tullsen, Dean M and Jouppi, Norman P},
-  booktitle={Proceedings of the 15th international conference on Parallel architectures and compilation techniques},
-  pages={23--32},
-  year={2006},
-  organization={ACM}
-}
-
-@inproceedings{lee2012tap,
-  title={{TAP: A TLP-Aware Cache Management Policy for a CPU--GPU Heterogeneous Architecture}},
-  author={Lee, Jaekyu and Kim, Hyesoon},
-  booktitle={HPCA},
-  year={2012},
-}
 
 @article{lindholm2008nvidia,
   title={NVIDIA Tesla: A unified graphics and computing architecture},
@@ -4186,13 +3994,6 @@ howpublished = "\url{https://d0.awsstatic.com/whitepapers/Intro_to_HPC_on_AWS.pd
 }
 
 
-@book{kirk2010programming,
-  title={Programming massively parallel processors: a hands-on approach},
-  author={Kirk, David B and Hwu, W. W.},
-  year={2010},
-  publisher={Morgan Kaufmann}
-}
-
 @inproceedings{bakhoda2010throughput,
   title={Throughput-effective on-chip networks for manycore accelerators},
   author={Bakhoda, Ali and Kim, John and Aamodt, Tor M},
@@ -4260,13 +4061,6 @@ author={ R. Ausavarungnirun, K. K.-W. Chang, L. Subramanian, G. H. Loh, and O. M
 title={{Staged Memory Scheduling: Achieving High Performance and Scalability in Heterogeneous Systems}}, 
 booktitle = {ISCA},
 year      = {2012}
-}
-
-@electronic{amd-hsa,
-  author        = {{Advanced Micro Devices, Inc.}},
-  title         = {{What is Heterogeneous System Architecture (HSA)?}},
-  url           = {{http://developer.amd.com/resources/heterogeneous-computing/what-is-heterogeneous-system-architecture-hsa/}},
-  year          = {{2013}}
 }
 
 
@@ -4400,13 +4194,6 @@ year      = {2012}
  year = {2012},
 } 
 
-@inproceedings{lcp-micro13,
- author = {Pekhimenko, Gennady and Seshadri, Vivek and Kim, Yoongu and Xin, Hongyi and Mutlu, Onur and Kozuch, Michael A. and Gibbons, Phillip B. and Mowry, Todd C.},
- title = {{Linearly Compressed Pages: A Main Memory Compression Framework with Low Complexity and Low Latency}},
- booktitle = {MICRO},
- year = {2013},
-}
-
 @inproceedings{compress-reuse-hpca15,
   title={{Exploiting Compressed Block Size as an Indicator of Future Reuse}},
   author={Pekhimenko, Gennady and Huberty, Tyler and Cai, Rui and Mutlu, Onur and Gibbons, Phillip B and Kozuch, Michael A and Mowry, Todd C},
@@ -4533,19 +4320,7 @@ year={2010},
   year      = {2010},
 }
 
-@INPROCEEDINGS{lonestar, 
-author={Burtscher, M. and Nasre, R. and Pingali, K.}, 
-title={{A Quantitative Study of Irregular Programs on {GPUs}}}, 
-booktitle={IISWC}, 
-year={2012}, 
-}
 
-@inproceedings{shoc,
- author = {Danalis, Anthony and Marin, Gabriel and McCurdy, Collin and Meredith, Jeremy S. and Roth, Philip C. and Spafford, Kyle and Tipparaju, Vinod and Vetter, Jeffrey S.},
- title = {{The Scalable Heterogeneous Computing (SHOC) Benchmark Suite}},
- booktitle = {GPGPU},
- year = {2010},
-} 
 
 
 @INPROCEEDINGS{lulesh, 
@@ -4611,12 +4386,6 @@ year={2013},
   year      = {2014}
 }
 
-@inproceedings{pichai-asplos14,
- author = {Pichai, Bharath and Hsu, Lisa and Bhattacharjee, Abhishek},
- title = {{Architectural Support for Address Translation on GPUs: Designing Memory Management Units for CPU/GPUs with Unified Address Spaces}},
- booktitle = {ASPLOS},
- year = {2014}
-} 
 
 @inproceedings{annavaram-micro13,
   author    = {Mohammad Abdel-Majeed and
@@ -4723,29 +4492,6 @@ year={2010},
 }
 
 
-
-@inproceedings{caws-pact14,
- author = {Lee, Shin-Ying and Wu, Carole-Jean},
- title = {{CAWS: Criticality-Aware Warp Scheduling for GPGPU Workloads}},
- booktitle = {PACT},
- year      = {2014},},
-} 
-
-@inproceedings{dynparallel-iiswc14,
- author = {Wang, Jin and Yalamanchili Sudhakar},
- title = {Characterization and Analysis of Dynamic
-Parallelism in Unstructured {GPU} Applications},
- booktitle = {IISWC},
- year      = {2014},},
-} 
-
-@inproceedings{tradecm-pact14,
-  author    = {Wei Ding and Mahmut Kandemir and Diana Guttman and Adwait Jog and Chita Das and Praveen Yedlapalli},
-  title     = {{Trading Cache Hit Rate for Memory Performance}},
-  booktitle = {PACT},
-  year      = {2014},
-}
-
 @inproceedings{cpugpu-micro,
   author    = {Onur Kay{\i}ran and Nachiappan Chidambaram Nachiappan and Adwait Jog and Rachata Ausavarungnirun and Mahmut T. Kandemir and Gabriel H. Loh and Onur Mutlu and Chita R. Das},
   title     = {{Managing GPU Concurrency in Heterogeneous Architectures}},
@@ -4784,13 +4530,7 @@ Parallelism in Unstructured {GPU} Applications},
   year      = {2015},
 }
 
-@inproceedings{data-compression-gpu-hpca15,
-  author    = { Nandita Vijaykumar and Gennady Pekhimenko and Adwait Jog and Abhishek Bhowmick and 
- Onur Mutlu and Chita Das and Mahmut Kandemir and Todd Mowry and Rachata Ausavarungnirun},
-  title     = {{A Case for Core-Assisted Bottleneck Acceleration in GPUs: Enabling Efficient Data Compression}},
-  booktitle = {HPCA, Under Review},
-  year      = {2015},
-}
+
 
 
 
@@ -4859,7 +4599,6 @@ year = {2011},
  booktitle = {ISCA},
  year = {2010},
 }
-
 
 %%% From Kevin's %%%
 
@@ -7669,15 +7408,7 @@ year = {2011},
   pages		= {302--313}
 }
 
-###InProceedings{ butts-isca2004,
-  author	= {J. Adam Butts and Guri Sohi},
-  title		= "{Use-Based Register Caching with Decoupled Indexing}",
-  booktitle	= proc # " 31st " # isca,
-  year		= 2004,
-  month		= monthisca2004,
-  address	= addrisca2004,
-  pages		= {302--313}
-}
+
 
 @InProceedings{	  butts-micro2002,
   author	= {J. Adam Butts and Guri Sohi},
@@ -7689,15 +7420,7 @@ year = {2011},
   pages		= {15--26}
 }
 
-###InProceedings{ butts-micro2002,
-  author	= {J. Adam Butts and Guri Sohi},
-  title		= "{Characterizing and Predicting Value Degree of Use}",
-  booktitle	= proc # " 35th " # micro,
-  year		= 2002,
-  month		= monthmicro2002,
-  address	= addrmicro2002,
-  pages		= {15--26}
-}
+
 
 @InProceedings{	  buyuktosunoglu-asic2002,
   author	= {Alper Buyuktosunoglu and Ali El-Moursy and David
@@ -8460,17 +8183,6 @@ year = {2011},
   number	= 12
 }
 
-###Article{	  chen-jem2003,
-  author	= {Kuan-Neng Chen and Andy Fan and Chuan Seng Tan and Rafael
-		  Reif},
-  title		= "{Temperature and Duration Effect on Microstructure
-		  Evolution During Copper Wafer Bonding}",
-  journal	= jem,
-  year		= 2003,
-  pages		= {1371--1374},
-  volume	= 32,
-  number	= 12
-}
 
 @InProceedings{	  cheng-aspdac2005,
   author	= {L. Cheng and L. Deng and M. Wong},
@@ -8481,14 +8193,6 @@ year = {2011},
   month		= monthaspdac2005
 }
 
-###InProceedings{ cheng-aspdac2005,
-  author	= {L. Cheng and L. Deng and M. Wong},
-  title		= "{Floorplan Design for 3-D VLSI Design}",
-  booktitle	= proc # " 10th " # aspdac,
-  year		= {2005},
-  address	= addraspdac2005,
-  month		= monthaspdac2005
-}
 
 @InProceedings{	  chiang-iccad01,
   author	= {Ting-Yen Chiang and Kaustav Banerjee and Krishna C.
@@ -8501,16 +8205,6 @@ year = {2011},
   year		= 2001
 }
 
-###InProceedings{ chiang-iccad01,
-  author	= {Ting-Yen Chiang and Kaustav Banerjee and Krishna C.
-		  Saraswat},
-  title		= "{Compact Modeling and SPICE-Based Simulation for
-		  Electrothermal Analysis of Multilevel ULSI Interconnects}",
-  booktitle	= proc # " " # iccad,
-  month		= monthiccad2001,
-  address	= addriccad2001,
-  year		= 2001
-}
 
 @PhDThesis{	  chiou-phdthesis,
   author	= {Derek Chiou},
@@ -8520,13 +8214,6 @@ year = {2011},
   year		= 1999
 }
 
-###PhDThesis{	  chiou-phdthesis,
-  author	= {Derek Chiou},
-  title		= "{Extending the Reach of Microprocessors: Column and
-		  Curious Caching}",
-  school	= {Massachusettts Institute of Technology},
-  year		= 1999
-}
 
 @InProceedings{	  chishti-isca2009,
   author	= {Zeshan Chishti and Alaa R. Alameldeen and Chris Wilkerson
@@ -8539,16 +8226,8 @@ year = {2011},
   year		= 2009
 }
 
-###InProceedings{ chishti-isca2009,
-  author	= {Zeshan Chishti and Alaa R. Alameldeen and Chris Wilkerson
-		  and Wei Wu and Shih-Lien Lu},
-  title		= "{Improving Cache Lifetime Reliability at Ultra-Low
-		  Voltages}",
-  booktitle	= proc # " 36th " # isca,
-  address	= addrisca2009,
-  month		= monthisca2009,
-  year		= 2009
-}
+
+
 
 @InProceedings{	  cho-micro99,
   author	= {Sangyeun Cho and Pen-Chung Yew and Gyungho Lee},
@@ -11949,6 +11628,7 @@ year = {2011},
   year		= 1994,
   month		= monthislped94
 }
+
 
 @Book{		  hp-aqa,
   author	= {John L. Hennessy and David A. Patterson},
@@ -15584,15 +15264,15 @@ year = {2011},
   year		= {2002}
 }
 
-###InProceedings{ loh-ieaaie2002,
-  author	= {Gabriel H. Loh and Dana S. Henry},
-  title		= "{Applying Machine Learning for Ensemble Branch
-		  Predictors}",
-  booktitle	= proc # " " # ieaaie,
-  month		= monthieaaie2002,
-  address	= addrieaaie2002,
-  year		= {2002}
+@inproceedings{sapatnekar2009addressing,
+  title={Addressing thermal and power delivery bottlenecks in 3D circuits},
+  author={Sapatnekar, Sachin S},
+  booktitle={Proceedings of the 2009 Asia and South Pacific Design Automation Conference},
+  pages={423--428},
+  year={2009},
+  organization={IEEE Press}
 }
+
 
 @Article{	  loh-ieeemicro2007,
   author	= {Gabriel H. Loh and Yuan Xie and Bryan Black},
@@ -15604,15 +15284,14 @@ year = {2011},
   number	= {3}
 }
 
-###Article{	  loh-ieeemicro2007,
-  author	= {Gabriel H. Loh and Yuan Xie and Bryan Black},
-  title		= "{Processor Design in 3D Die-Stacking Technologies}",
-  journal	= ieeemicro,
-  year		= 2007,
-  month		= {May--June},
-  volume	= {27},
-  number	= {3}
+@inproceedings{dong2009cost,
+  title={Cost analysis and system-level design exploration for 3D ICs},
+  author={Dong, Xiangyu and Xie, Yuan},
+  booktitle={Asia and South Pacific design automation conference},
+  year={2009}
 }
+
+
 
 @InProceedings{	  loh-isca2008,
   author	= {Gabriel H. Loh},
@@ -23024,29 +22703,75 @@ year = {2011},
   year		= 2009
 }
 
-###InProceedings{ xie-isca2009,
-  author	= {Yuejian Xie and Gabriel H. Loh},
-  title		= "{PIPP: Promotion/Insertion Pseudo-Partitioning of
-		  Multi-Core Shared Caches}",
-  booktitle	= proc # " 36th " # isca,
-  address	= addrisca2009,
-  month		= monthisca2009,
-  year		= 2009
+@book{bower2008handbook,
+  title={Handbook of 3D Integration: Technology and Applications of 3D Integrated Circuits},
+  author={Bower, Christopher Andrew and Garrou, Philip E and Ramm, Peter},
+  year={2008},
+  publisher={Wiley-VCH}
 }
 
-@Article{	  xie-jetc2006,
-  author	= {Yuan Xie and Gabriel H. Loh and Bryan Black and Kerry
-		  Bernstein},
-  title		= "{Design Space Exploration for 3D Architecture}",
-  journal	= jetc,
-  volume	= 2,
-  number	= 2,
-  pages		= {65--103},
-  year		= 2006,
-  month		= {April}
+@inproceedings{joyner2001stochastic,
+  title={A stochastic global net-length distribution for a three-dimensional system-on-a-chip (3D-SoC)},
+  author={Joyner, James W and Zarkesh-Ha, Payman and Meindl, James D},
+  booktitle={Proceedings 14th Annual IEEE International ASIC/SOC Conference (IEEE Cat. No. 01TH8558)},
+  pages={147--151},
+  year={2001},
+  organization={IEEE}
 }
 
-###Article{	  xie-jetc2006,
+@inproceedings{egawa2009evaluation,
+  title={Evaluation of fine grain 3-D integrated arithmetic units},
+  author={Egawa, Ryusuke and Taday, Jubee and Kobayashi, Hiroaki and Gotoy, Gensuke},
+  booktitle={2009 IEEE International Conference on 3D System Integration},
+  pages={1--8},
+  year={2009},
+  organization={IEEE}
+}
+
+@article{jacob2009mitigating,
+  title={Mitigating memory wall effects in high-clock-rate and multicore CMOS 3-D processor memory stacks},
+  author={Jacob, Philip and Zia, Aamir and Erdogan, Okan and Belemjian, Paul M and Kim, Jin-Woo and Chu, Michael and Kraft, Russell P and McDonald, John F and Bernstein, Kerry},
+  journal={Proceedings of the IEEE},
+  volume={97},
+  number={1},
+  pages={108--122},
+  year={2009},
+  publisher={IEEE}
+}
+
+
+
+
+@inproceedings{ouyang2009arithmetic,
+  title={Arithmetic unit design using 180nm TSV-based 3D stacking technology},
+  author={Ouyang, Jin and Sun, Guangyu and Chen, Yibo and Duan, Lian and Zhang, Tao and Xie, Yuan and Irwin, Mary Jane},
+  booktitle={2009 IEEE International Conference on 3D System Integration},
+  pages={1--4},
+  year={2009},
+  organization={IEEE}
+}
+
+
+@inproceedings{puttaswamyt2007scalability,
+  title={Scalability of 3D-integrated arithmetic units in high-performance microprocessors},
+  author={Puttaswamyt, Kiran and Loh, Gabriel H},
+  booktitle={Proceedings of the 44th annual Design Automation Conference},
+  pages={622--625},
+  year={2007},
+  organization={ACM}
+}
+
+@inproceedings{vaidyanathan2007architecting,
+  title={Architecting microprocessor components in 3D design space},
+  author={Vaidyanathan, Balaji and Hung, Wei-Lun and Wang, Feng and Xie, Yuan and Narayanan, Vijaykrishnan and Irwin, Mary Jane},
+  booktitle={20th International Conference on VLSI Design held jointly with 6th International Conference on Embedded Systems (VLSID'07)},
+  pages={103--108},
+  year={2007},
+  organization={IEEE}
+}
+
+
+@Article{xie-jetc2006,
   author	= {Yuan Xie and Gabriel H. Loh and Bryan Black and Kerry
 		  Bernstein},
   title		= "{Design Space Exploration for 3D Architecture}",
@@ -26414,14 +26139,6 @@ year={1966},
  keywords = {bandwidth, linux, page placement, program annotation},
 } 
 
-@inproceedings{cong-hpca17,
-  title={Supporting Address Translation for Accelerator-Centric Architectures},
-  author={Jason Cong and Zhenman Fang and Yuchen Hao and Glenn Reinmana},
-  booktitle={HPCA},
-  year={2017},
-}
-
-
 
 @inproceedings{cc-numa-gpu-hpca15,
   title={Unlocking Bandwidth for {GPUs in CC-NUMA} Systems},
@@ -26499,38 +26216,6 @@ booktitle = {USENIX ATC},
 year = {2012},
 }
 
-
- 
-@inproceedings {gpuvm,
-author = {Yusuke Suzuki and Shinpei Kato and Hiroshi Yamada and Kenji Kono},
-title = {GPUvm: Why Not Virtualizing GPUs at the Hypervisor?},
-booktitle = {USENIX ATC},
-year = {2014},
-}
-
-
-
-@inproceedings{spectlb,
- author = {Barr, Thomas W. and Cox, Alan L. and Rixner, Scott},
- title = {{SpecTLB: A Mechanism for Speculative Address Translation}},
- booktitle = {ISCA},
- year = {2011},
-} 
-
-@inproceedings{direct-segment,
- author = {Basu, Arkaprava and Gandhi, Jayneel and Chang, Jichuan and Hill, Mark D. and Swift, Michael M.},
- title = {Efficient Virtual Memory for Big Memory Servers},
- booktitle = {ISCA},
- year = {2013},
-} 
-
-@inproceedings{large-reach,
- author = {Bhattacharjee, Abhishek},
- title = {{Large-reach Memory Management Unit Caches}},
- booktitle = {MICRO},
- year = {2013},
-} 
-
 @inproceedings{inter-core-tlb,
  author = {Bhattacharjee, Abhishek and Martonosi, Margaret},
  title = {{Inter-core Cooperative TLB for Chip Multiprocessors}},
@@ -26590,24 +26275,6 @@ year={2014},
   year={2018},
 }
 
-@inproceedings{Loh:2015,
- author = {Loh, Gabriel H. and Jerger, Natalie Enright and Kannan, Ajaykumar and Eckert, Yasuko},
- title = {Interconnect-Memory Challenges for Multi-chip, Silicon Interposer Systems},
- booktitle = {Proceedings of the 2015 International Symposium on Memory Systems},
- series = {MEMSYS '15},
- year = {2015},
- isbn = {978-1-4503-3604-8},
- location = {Washington DC, DC, USA},
- pages = {3--10},
- numpages = {8},
- url = {http://doi.acm.org/10.1145/2818950.2818951},
- doi = {10.1145/2818950.2818951},
- acmid = {2818951},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {Silicon interposer, die stacking, interconnect, memory},
-} 
-
 
 @INPROCEEDINGS{micro-memory-centric, 
 author={Youngeun Kwon and Minsoo Rhu}, 
@@ -26660,13 +26327,6 @@ month={Oct},}
  address = {New York, NY, USA},
  keywords = {gpu, memory overcommitment, oversubscription, swapping, virtualization},
 }
-
-@inproceedings{tlb-consistency,
- author = {Black, D. L. and Rashid, R. F. and Golub, D. B. and Hill, C. R.},
- title = {Translation Lookaside Buffer Consistency: A Software Approach},
- booktitle = {ASPLOS},
- year = {1989},
-} 
 
 @INPROCEEDINGS{unitd, 
 author={B. F. Romanescu and A. R. Lebeck and D. J. Sorin and A. Bracy}, 
@@ -26740,12 +26400,6 @@ year={2012},
     year = {2006}
 }
 
-@inproceedings{li-ics15,
- author = {Li, Chao and Song, Shuaiwen Leon and Dai, Hongwen and Sidelnik, Albert and Hari, Siva Kumar Sastry and Zhou, Huiyang},
- title = {{Locality-Driven Dynamic {GPU} Cache Bypassing}},
- booktitle = {ICS},
- year = {2015},
-}
 
 @INPROCEEDINGS{teresa-micro97, 
 	author={Johnson, T L. and Merten, M. C. and Hwu, W. W.}, 
@@ -26880,6 +26534,169 @@ journal = {IEEE Micro},
 year = {2008},
 volume = {28},
 number = {3}
+}
+
+@inproceedings{ekman-isca05,
+ author = {Ekman, Magnus and Stenstrom, Per},
+ title = {{A Robust Main-Memory Compression Scheme}},
+ booktitle = {ISCA},
+ year = {2005},
+} 
+
+@inproceedings{zeiler2014visualizing,
+  title={Visualizing and understanding convolutional networks},
+  author={Zeiler, Matthew D and Fergus, Rob},
+  booktitle={European conference on computer vision},
+  pages={818--833},
+  year={2014},
+  organization={Springer}
+}
+
+
+@inproceedings{dillon2010cloud,
+  title={Cloud computing: issues and challenges},
+  author={Dillon, Tharam and Wu, Chen and Chang, Elizabeth},
+  booktitle={2010 24th IEEE international conference on advanced information networking and applications},
+  pages={27--33},
+  year={2010},
+  organization={Ieee}
+}
+
+@inproceedings{krizhevsky2012imagenet,
+  title={Imagenet classification with deep convolutional neural networks},
+  author={Krizhevsky, Alex and Sutskever, Ilya and Hinton, Geoffrey E},
+  booktitle={Advances in neural information processing systems},
+  pages={1097--1105},
+  year={2012}
+}
+
+@inproceedings{szegedy2015going,
+  title={Going deeper with convolutions},
+  author={Szegedy, Christian and Liu, Wei and Jia, Yangqing and Sermanet, Pierre and Reed, Scott and Anguelov, Dragomir and Erhan, Dumitru and Vanhoucke, Vincent and Rabinovich, Andrew},
+  booktitle={Proceedings of the IEEE conference on computer vision and pattern recognition},
+  pages={1--9},
+  year={2015}
+}
+
+
+@article{simonyan2014very,
+  title={Very deep convolutional networks for large-scale image recognition},
+  author={Simonyan, Karen and Zisserman, Andrew},
+  journal={arXiv preprint arXiv:1409.1556},
+  year={2014}
+}
+
+
+@inproceedings{hauswald2015sirius,
+  title={Sirius: An open end-to-end voice and vision personal assistant and its implications for future warehouse scale computers},
+  author={Hauswald, Johann and Laurenzano, Michael A and Zhang, Yunqi and Li, Cheng and Rovinski, Austin and Khurana, Arjun and Dreslinski, Ronald G and Mudge, Trevor and Petrucci, Vinicius and Tang, Lingjia and others},
+  booktitle={ACM SIGPLAN Notices},
+  volume={50},
+  number={4},
+  pages={223--238},
+  year={2015},
+  organization={ACM}
+}
+
+
+@article{mell2011nist,
+  title={The NIST definition of cloud computing},
+  author={Mell, Peter and Grance, Tim and others},
+  year={2011},
+  publisher={Computer Security Division, Information Technology Laboratory, National~…}
+}
+
+@article{bhardwaj2010cloud,
+  title={Cloud computing: A study of infrastructure as a service (IAAS)},
+  author={Bhardwaj, Sushil and Jain, Leena and Jain, Sandeep},
+  journal={International Journal of engineering and information Technology},
+  volume={2},
+  number={1},
+  pages={60--63},
+  year={2010}
+}
+
+
+@article{vaquero2008break,
+  title={A break in the clouds: towards a cloud definition},
+  author={Vaquero, Luis M and Rodero-Merino, Luis and Caceres, Juan and Lindner, Maik},
+  journal={ACM SIGCOMM Computer Communication Review},
+  volume={39},
+  number={1},
+  pages={50--55},
+  year={2008},
+  publisher={ACM}
+}
+
+@inproceedings{he2008mars,
+  title={Mars: a MapReduce framework on graphics processors},
+  author={He, Bingsheng and Fang, Wenbin and Luo, Qiong and Govindaraju, Naga K and Wang, Tuyong},
+  booktitle={2008 International Conference on Parallel Architectures and Compilation Techniques (PACT)},
+  pages={260--269},
+  year={2008},
+  organization={IEEE}
+}
+
+@inproceedings{chen2014ft,
+  title={FT-matrix: A coordination-aware architecture for signal processing},
+  author={Chen, Shuming and Wang, Yaohua and Liu, Sheng and Wan, Jianghua and Chen, Haiyan and Liu, Hengzhu and Zhang, Kai and Liu, Xiangyuan and Ning, Xi},
+  journal={IEEE micro},
+  volume={34},
+  number={6},
+  pages={64--73},
+  year={2014},
+  publisher={IEEE}
+}
+
+
+@inproceedings{chen2014dadiannao,
+  title={Dadiannao: A machine-learning supercomputer},
+  author={Chen, Yunji and Luo, Tao and Liu, Shaoli and Zhang, Shijin and He, Liqiang and Wang, Jia and Li, Ling and Chen, Tianshi and Xu, Zhiwei and Sun, Ninghui and others},
+  booktitle={Proceedings of the 47th Annual IEEE/ACM International Symposium on Microarchitecture},
+  pages={609--622},
+  year={2014},
+  organization={IEEE Computer Society}
+}
+
+@inproceedings{bolz2003sparse,
+  title={Sparse matrix solvers on the GPU: conjugate gradients and multigrid},
+  author={Bolz, Jeff and Farmer, Ian and Grinspun, Eitan and Schr{\"o}oder, Peter},
+  booktitle={ACM transactions on graphics (TOG)},
+  volume={22},
+  number={3},
+  pages={917--924},
+  year={2003},
+  organization={ACM}
+}
+
+@inproceedings{fan2004gpu,
+  title={GPU cluster for high performance computing},
+  author={Fan, Zhe and Qiu, Feng and Kaufman, Arie and Yoakum-Stover, Suzanne},
+  booktitle={Proceedings of the 2004 ACM/IEEE conference on Supercomputing},
+  pages={47},
+  year={2004},
+  organization={IEEE Computer Society}
+}
+
+
+@inproceedings{chen2014diannao,
+  title={Diannao: A small-footprint high-throughput accelerator for ubiquitous machine-learning},
+  author={Chen, Tianshi and Du, Zidong and Sun, Ninghui and Wang, Jia and Wu, Chengyong and Chen, Yunji and Temam, Olivier},
+  booktitle={ACM Sigplan Notices},
+  volume={49},
+  number={4},
+  pages={269--284},
+  year={2014},
+  organization={ACM}
+}
+
+
+@article{koomey2011growth,
+  title={Growth in data center electricity use 2005 to 2010},
+  author={Koomey, Jonathan},
+  journal={A report by Analytical Press, completed at the request of The New York Times},
+  volume={9},
+  year={2011}
 }
 
 
@@ -27135,13 +26952,6 @@ year={2014},
  year = {2012},
 } 
 
-@inproceedings{osp-isca13,
- author    = {Adwait Jog and Onur Kay{\i}ran and Asit K. Mishra and Mahmut T. Kandemir and Onur Mutlu and Ravishankar Iyer and Chita R. Das},
- title     = {{Orchestrated Scheduling and Prefetching for GPGPUs}},
- booktitle = {ISCA},
- year      = {2013},
-} 
-
 @inproceedings{context-funneling, 
 author={Lingyuan Wang and Miaoqing Huang and El-Ghazawi, T.}, 
 booktitle={HPCS}, 
@@ -27258,12 +27068,6 @@ year={2010},
   year      = {2012},
 }
 
-@INPROCEEDINGS{gpgpu-sim,
-author={Bakhoda, A. and Yuan, G.L. and Fung, W.W.L. and Wong, H. and Aamodt, T.M.},
-booktitle={ISPASS},
-title={{Analyzing CUDA Workloads Using a Detailed GPU Simulator}},
-year={2009},
-}
 
 @INPROCEEDINGS{warp-level-div, 
 author={Ping Xiang and Yi Yang and Huiyang Zhou}, 
@@ -27295,6 +27099,13 @@ year={2014},
   pages={188--200},
   year={2016},
   organization={IEEE}
+}
+
+@inproceedings{toggle-gena-cal, 
+author={G. Pekhimenko and E. Bolotin and M. O’Connor and O. Mutlu and T. C. Mowry and S. W. Keckler}, 
+journal={IEEE Computer Architecture Letters}, 
+title={{Toggle-Aware Compression for GPUs}}, 
+year={2015}, 
 }
 
 @inproceedings{merrifield2016performance,
@@ -27457,23 +27268,7 @@ month={June},}
   publisher={Elsevier}
 }
 
-@techreport{parboil,
-  author        = {Stratton, J. A. and Rodrigues, C. and Sung, I. J. and Obeid, N. and Chang, L. W. and Anssari, N. and Liu, G. D. and Hwu, W. W.},
-  title         = {{Parboil: A Revised Benchmark Suite for Scientific and Commercial Throughput Computing}},
-  institution   = {{Univ.\ of Illinois at Urbana-Champaign}},
-  number        = {{ IMPACT-12-01}},
-  month         = {March},
-  year          = {2012}
-}
 
-@inproceedings{vast,
-  title={VAST: The illusion of a large memory space for GPUs},
-  author={Lee, Janghaeng and Samadi, Mehrzad and Mahlke, Scott},
-  booktitle={Parallel Architecture and Compilation Techniques (PACT), 2014 23rd International Conference on},
-  pages={443--454},
-  year={2014},
-  organization={IEEE}
-}
 
 @article{jang2010exploiting,
   title={Exploiting memory access patterns to improve memory performance in data-parallel architectures},
@@ -27571,13 +27366,6 @@ title={{Many-Thread Aware Prefetching Mechanisms for GPGPU Applications}},
 year={2010},
 }
 
-@ARTICLE{lindholm, 
-author={Lindholm, E. and Nickolls, J. and Oberman, S. and Montrym, J.}, 
-journal={IEEE Micro}, 
-title={{NVIDIA Tesla: A Unified Graphics and Computing Architecture}}, 
-year={2008}, 
-volume={28}, 
-number={2},}
 
 @INPROCEEDINGS{stfm,
 AUTHOR = "Onur Mutlu and Thomas Moscibroda",
@@ -27600,12 +27388,6 @@ year      = {2008},
   year={2017}
 }
 
-@inproceedings{largewarps,
- author = {Narasiman, Veynu and Shebanow, Michael and Lee, Chang Joo and Miftakhutdinov, Rustam and Mutlu, Onur and Patt, Yale N.},
- title = {{Improving GPU Performance via Large Warps and Two-Level Warp Scheduling}},
- booktitle = {MICRO},
- year = {2011},
-}
 
 @inproceedings{ghb, 
 author={Nesbit, K.J. and Smith, J.E.}, 
@@ -27621,12 +27403,6 @@ year = 2014,
 howpublished = "\url{http://www.sisoftware.net}"
 }
 
-@misc{tegrax1,
-author = "NVIDIA Corp.",
-title = {{NVIDIA Tegra X1: NVIDIA`s New Mobile Superchip}},
-year = 2015,
-howpublished = "\url{http://www.nvidia.com/object/tegra-x1-processor.html}"
-}
 
 
 @misc{realizingIBM,
@@ -27695,13 +27471,7 @@ howpublished = "\url{https://docs.nvidia.com/deploy/pdf/CUDA_Multi_Process_Servi
 }
 
 
-@misc{cuda-sdk,
-key = "NVIDIA",
-author = "{NVIDIA Corp.}",
-title = {{CUDA C/C++ SDK Code Samples}},
-year = 2011,
-howpublished = "\url{http://developer.nvidia.com/cuda-cc-sdk-code-samples}"
-}
+
 
 @misc{cuda-4,
 key = "NVIDIA",
@@ -27712,13 +27482,6 @@ howpublished = "\url{https://developer.nvidia.com/cuda-toolkit-40}"
 }
 
 
-@misc{maxwell,
-key = "NVIDIA",
-author = "{NVIDIA Corp.}",
-title = {{NVIDIA GeForce GTX 750 Ti}},
-year = 2014,
-howpublished = "\url{http://international.download.nvidia.com/geforce-com/international/pdfs/GeForce-GTX-750-Ti-Whitepaper.pdf}"
-}
 
 @inproceedings{kim2016bit,
   title={Bit-plane compression: Transforming data for better compression in many-core architectures},
@@ -27735,7 +27498,7 @@ howpublished = "\url{http://international.download.nvidia.com/geforce-com/intern
 @misc{pascal,
 key = "NVIDIA",
 author = "{NVIDIA Corp.}",
-title = {{NVIDIA Tesla P100 P100 GPU Architecture}},
+title = {{NVIDIA Tesla P100 GPU Architecture}},
 year = 2016,
 howpublished = "\url{https://images.nvidia.com/content/pdf/tesla/whitepaper/pascal-architecture-whitepaper.pdf}"
 }
@@ -27755,13 +27518,6 @@ year = {2014},
 howpublished = "HOTCHIP"
 }
 
-@misc{fermi,
-key = "NVIDIA",
-author = "{NVIDIA Corp.}",
-title = {{NVIDIA's Next Generation CUDA Compute Architecture: Fermi}},
-year = 2011,
-howpublished = "\url{http://www.nvidia.com/content/pdf/fermi_white_papers/nvidia_fermi_compute_architecture_whitepaper.pdf}"
-}
 
 @inproceedings{adve,
  author = {Pai, Vijay S. and Adve, Sarita},
@@ -27999,24 +27755,6 @@ year={2009},
   author={Manish Arora},
   booktitle={Technical Report},
   organization={University of California at San Diego}
-}
-
-@inproceedings{adriaens2012case,
-  title={The case for GPGPU spatial multitasking},
-  author={Adriaens, Jacob T and Compton, Katherine and Kim, Nam Sung and Schulte, Michael J},
-  booktitle={High Performance Computer Architecture (HPCA), 2012 IEEE 18th International Symposium on},
-  pages={1--12},
-  year={2012},
-  organization={IEEE}
-}
-
-@inproceedings{che2009rodinia,
-  title={Rodinia: A benchmark suite for heterogeneous computing},
-  author={Che, Shuai and Boyer, Michael and Meng, Jiayuan and Tarjan, David and Sheaffer, Jeremy W and Lee, Sang-Ha and Skadron, Kevin},
-  booktitle={Workload Characterization, 2009. IISWC 2009. IEEE International Symposium on},
-  pages={44--54},
-  year={2009},
-  organization={IEEE}
 }
 
 @inproceedings{collins2002pointer,
@@ -28411,40 +28149,76 @@ year={2009},
   journal={http://www.arm.com/}
 }
 
-@article{intel,
-  title={Intel Microprocessors},
-  author={Intel},
-  journal={http://www.intel.com/content/www/us/en/homepage.html}
-}
-
-@article{radeon,
-  title={ATI Radeon GPGPUs},
-  author={ATI},
-  journal={http://www.amd.com/us/products/desktop/graphics/amd-radeon-hd-6000/Pages/amd-radeon-hd-6000.aspx}
-}
-
-@misc{programmingguide,
-key = "NVIDIA",
-author = "{NVIDIA Corp.}",
-title = {{CUDA C Programming Guide}},
-howpublished = {\url{http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html}},
-year = "2015"
-}
-
-
 @article{amazonec2,
   title={Amazon EC2 GPU Instance},
   author={AWS},
   journal={http://aws.amazon.com/about-aws/whats-new/2013/11/04/announcing-new-amazon-ec2-gpu-instance-type/ }
 }
 
-@article{amd-fusion,
-  title={AMD Accelerated Processing Units},
-  author={AMD},
-  year={2011},
-  journal={http://www.amd.com/us/products/technologies/apu/Pages/apu.aspx}
+
+@inproceedings{Li:dac18,
+ author = {Li, Chen and Zigerelli, Andrew and Yang, Jun and Guo, Yang},
+ title = {PEP: Proactive Checkpointing for EFficient Preemption on GPUs},
+ booktitle = {Proceedings of the 55th Annual Design Automation Conference},
+ series = {DAC '18},
+ year = {2018},
+ isbn = {978-1-4503-5700-5},
+ location = {San Francisco, California},
+ pages = {114:1--114:6},
+ articleno = {114},
+ numpages = {6},
+ url = {http://doi.acm.org/10.1145/3195970.3196091},
+ doi = {10.1145/3195970.3196091},
+ acmid = {3196091},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+} 
+
+
+@inproceedings{li2016dll,
+  title={DLL: A dynamic latency-aware load-balancing strategy in 2.5 D NoC architecture},
+  author={Li, Chen and Ma, Sheng and Wang, Lu and Wang, Zicong and Zhao, Xia and Guo, Yang},
+  booktitle={2016 IEEE 34th International Conference on Computer Design (ICCD)},
+  pages={646--653},
+  year={2016},
+  organization={IEEE}
 }
 
+@book{kaeli2015heterogeneous,
+  title={Heterogeneous computing with OpenCL 2.0},
+  author={Kaeli, David R and Mistry, Perhaad and Schaa, Dana and Zhang, Dong Ping},
+  year={2015},
+  publisher={Morgan Kaufmann}
+}
+
+
+@article{li2018dynamic,
+  title={A Dynamic and Proactive GPU Preemption Mechanism using Checkpointing},
+  author={Li, Chen and Zigerelli, Andrew and Yang, Jun and Zhang, Youtao and Ma, Sheng and Guo, Yang},
+  journal={IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems},
+  year={2018},
+  publisher={IEEE}
+}
+
+
+
+@inproceedings{Li:asplos19,
+ author = {Li, Chen and Ausavarungnirun, Rachata and Rossbach, Christopher J. and Zhang, Youtao and Mutlu, Onur and Guo, Yang and Yang, Jun},
+ title = {A Framework for Memory Oversubscription Management in Graphics Processing Units},
+ booktitle = {Proceedings of the Twenty-Fourth International Conference on Architectural Support for Programming Languages and Operating Systems},
+ series = {ASPLOS '19},
+ year = {2019},
+ isbn = {978-1-4503-6240-5},
+ location = {Providence, RI, USA},
+ pages = {49--63},
+ numpages = {15},
+ url = {http://doi.acm.org/10.1145/3297858.3304044},
+ doi = {10.1145/3297858.3304044},
+ acmid = {3304044},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {gpgpu applications, graphics processing units, oversubscription, virtual memory management},
+}
 
 @book{kirk2010programming,
   title={Programming massively parallel processors: a hands-on approach},
@@ -28964,26 +28738,12 @@ year={2013},
 }
 
 
-@misc{firepro,
-author = "AMD",
-title = {{VDI and Virtualized Workstations}},
-year = {2015},
-howpublished = "\url{http://www.amd.com/en-us/solutions/professional/virtualization#}"
-}
-
-
-
-
 @misc{grid,
   author = "{NVIDIA Corp.}",
   title = {{NVIDIA GRID}},
   howpublished = "\url{http://www.nvidia.com/object/grid-boards.html}",
 }
 
-@misc{amdr9,
-  title = {{AMD Radeon R9 290X}},
-  howpublished = "\url{http://www.amd.com/us/press-releases/Pages/amd-radeon-r9-290x-2013oct24.aspx}",
-}
 
 @misc{jwac12,
 	title= {{3rd JILP Workshop on Computer Architecture Competitions (Memory Scheduling Championship)}},
@@ -29050,12 +28810,7 @@ Parallelism in Unstructured {GPU} Applications},
   year      = {2014},
 }
 
-@inproceedings{cpugpu-micro,
-  author    = {Onur Kay{\i}ran and Nachiappan Chidambaram Nachiappan and Adwait Jog and Rachata Ausavarungnirun and Mahmut T. Kandemir and Gabriel H. Loh and Onur Mutlu and Chita R. Das},
-  title     = {{Managing GPU Concurrency in Heterogeneous Architectures}},
-  booktitle = {MICRO},
-  year      = {2014},
-}
+
 
 @inproceedings{wang2018efficient,
   title={Efficient and Fair Multi-programming in GPUs via Effective Bandwidth Management},
@@ -29065,42 +28820,6 @@ Parallelism in Unstructured {GPU} Applications},
   year={2018},
   organization={IEEE}
 }
-
-
-@inproceedings{anatomy-sigmetrics15,
-  author    = {Adwait Jog and Onur Kay{\i}ran and Tuba Kesten and Ashutosh Pattnaik and Evgeny Bolotin and
-   Nilardish Chaterjee and Steve Keckler and Mahmut Kandemir and Chita Das},
-  title     = {{Anatomy of GPU Memory System for Multi-Application Execution}},
-  booktitle = {SIGMETRICS, Under Review},
-  year      = {2015},
-}
-
-@inproceedings{criticality-gpu-hpca15,
-  author    = {Adwait Jog and Onur Kay{\i}ran and Ashutosh Pattnaik and Mahmut Kandemir and 
-  Onur Mutlu and Ravi Iyer and Chita Das},
-  title     = {{A Case for Criticality Aware Memory Scheduling in GPUs}},
-  booktitle = {HPCA, Under Review},
-  year      = {2015},
-}
-
-@inproceedings{kernel-aware-gpu-hpca15,
-  author    = {Amin Jadidi and Onur Kay{\i}ran and Adwait Jog and Mahmut Kandemir and Chita Das},
-  title     = {{Kernel-Based Energy Optimization in GPGPUs}},
-  booktitle = {HPCA, Under Review},
-  year      = {2015},
-}
-
-@inproceedings{data-compression-gpu-hpca15,
-  author    = { Nandita Vijaykumar and Gennady Pekhimenko and Adwait Jog and Abhishek Bhowmick and 
- Onur Mutlu and Chita Das and Mahmut Kandemir and Todd Mowry and Rachata Ausavarungnirun},
-  title     = {{A Case for Core-Assisted Bottleneck Acceleration in GPUs: Enabling Efficient Data Compression}},
-  booktitle = {HPCA, Under Review},
-  year      = {2015},
-}
-
-
-
-
 
 
 
@@ -29134,13 +28853,6 @@ Parallelism in Unstructured {GPU} Applications},
  journal = {Wild and Crazy Ideas Session, 8th ASPLOS},
 }
 
-@article{largewarp,
- author = {Narasiman, Veynu and others},
- title = {Improving {GPU} Performance via Large Warps and Two-Level Warp
-     Scheduling},
- journal = {MICRO},
- year = {2011},
-}
 
 @article{dynamicwarp,
  author = {Fung, Wilson W. L. and Sham, Ivan and Yuan, George and Aamodt, Tor
@@ -29203,16 +28915,7 @@ year = {2011},
   organization={IEEE Computer Society}
 }
 
-@inproceedings{vijaykumar2015case,
-  title={A case for core-assisted bottleneck acceleration in GPUs: enabling flexible data compression with assist warps},
-  author={Vijaykumar, Nandita and Pekhimenko, Gennady and Jog, Adwait and Bhowmick, Abhishek and Ausavarungnirun, Rachata and Das, Chita and Kandemir, Mahmut and Mowry, Todd C and Mutlu, Onur},
-  booktitle={ACM SIGARCH Computer Architecture News},
-  volume={43},
-  number={3},
-  pages={41--53},
-  year={2015},
-  organization={ACM}
-}
+
 
 @inproceedings{pekhimenko2013linearly,
   title={Linearly compressed pages: a low-complexity, low-latency main memory compression framework},
@@ -29315,6 +29018,7 @@ year = {2011},
   url          = {{http://support.amd.com/TechDocs/48882_IOMMU.pdf}}
 }
 
+
 @manual{intel-io-virt,
   title         = {Intel Virtualization Technology for Directed I/O},
   organization  = {{Intel}},
@@ -29343,14 +29047,6 @@ year  = 2015,
 URL = {http://download.tensorflow.org/paper/whitepaper2015.pdf}
 }
 
-@Misc{kepler,
-  key		= "NVIDIA",
-  author	= "{NVIDIA Corp.}",
-  title		= {{NVIDIA's Next Generation CUDA Compute Architecture:
-		  Kepler GK110}},
-  year		= 2012,
-  howpublished	= "\url{http://www.nvidia.com/content/PDF/kepler/NVIDIA-Kepler-GK110-Architecture-Whitepaper.pdf}"
-}
 
 @inproceedings{vmCUDA,
  author = {Vu, Lan and Sivaraman, Hari and Bidarkar, Rishi},
