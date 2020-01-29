@@ -156,8 +156,8 @@ CPU主要负责初始化GPU端的计算，然后将数据传输到GPU进行计�
 
 \begin{figure}[htb]
 \centering
-\subfloat[分立式CPU和GPU]{\includegraphics[width=.8\textwidth]{/Figs_background/discrete}} \qquad
-\subfloat[集成式CPU和GPU]{\includegraphics[width=.8\textwidth]{/Figs_background/integrated}} 
+\subfloat[分立式CPU和GPU]{\includegraphics[width=.6\textwidth]{/Figs_background/discrete}} \qquad
+\subfloat[集成式CPU和GPU]{\includegraphics[width=.6\textwidth]{/Figs_background/integrated}} 
 \caption{CPU和GPU典型结构的抽象图}
 \label{fig:CPUGPU}
 \end{figure}
@@ -288,7 +288,7 @@ int main() {
 在该示例中，我们已经并行化了图~\ref{fig:csaxpy}中CPU示例的\texttt{for}循环。 
 具体来说，图~\ref{fig:csaxpy}中原始CPU专用C代码中第4行\texttt{for}循环的每次迭代都被转换为运行图~\ref{fig:cudasaxpy}中第3-5行代码的每个独立线程。
 
-在我们的示例中，CPU在第17行调用CUDA的内核函数配置语法的启动GPU上的计算。
+在示例中，CPU在第17行调用CUDA的内核函数配置语法的启动GPU上的计算。
 内核函数配置语法看起来很像C中的函数调用，其中一些附加信息指定了三角括号\texttt{(<{}<{}< >{}>{}>)}之间包含的线程数。
 组成内核函数的线程被组织成一个层次结构，该层次结构由包含网格（grid）、线程块和warp三级组成。
 warp一般由32个或64个线程组成，多个warp组成一个线程块，多个线程块组成一个网格。
@@ -319,14 +319,14 @@ CPU代码传递给内核配置表达式的参数将被分发到GPU上正在运�
 在执行时，每个线程在网格和线程块内具有固定的，唯一的非负整数x，y和z坐标组合，这是每个线程块在网格中的x、y和z坐标。
 类似地，每个线程在线程块内具有x、y和z坐标。
 这些坐标的范围由内核配置语句设置（第17行）。
-在我们的示例中，未指定y和z维度，因此所有线程的y和z线程块和线程坐标的值都为零。
+在示例中，未指定y和z维度，因此所有线程的y和z线程块和线程坐标的值都为零。
 在第3行，\texttt{threadIdx.x}的值标识其线程块和\texttt{blockIdx.x}中线程的x坐标。
 
-在我们的示例中，未指定y和z维度，因此所有线程的y和z线程块和线程坐标的值都为零。
+在示例中，未指定y和z维度，因此所有线程的y和z线程块和线程坐标的值都为零。
 在第3行，\texttt{threadIdx.x}的值标识其线程块内线程的x坐标；
 \texttt{blockIdx.x}指示其网格中线程块的x坐标；
 值\texttt{blockDim.x}表示x维度中的最大线程数。
-在我们的示例中，\texttt{blockDim.x}在第17行被置为256。
+在示例中，\texttt{blockDim.x}在第17行被置为256。
 表达式\texttt{blockIdx.x * blockDim.x + threadIdx.x}用于计算在访问数组x和y时使用的偏移量i 。
 正如我们将看到的，使用索引i，我们为每个线程分配了x和y的唯一元素。
 
@@ -338,7 +338,7 @@ i小于n的线程执行第5行。
 在网格中的所有线程完成后，内核函数返回，在第17行之后继续由CPU执行。
 在第18行，CPU调用GPU驱动程序将\texttt{d\_y}指向的数组从GPU内存拷贝回CPU内存。
 
-下面我们介绍一些SAXPY示例未说明的其他细节。
+下面介绍一些SAXPY示例未说明的其他细节。
 一个线程块中的线程可以通过每个流多核处理器的便笺存储器相互高效通信。这个便笺存储器被NVIDIA称为共享内存（share memory）。
 每个流多核处理器包含一个共享内存。
 共享内存中的空间在该GPU计算核上运行的所有线程块之间划分。每个线程块拥有一块独立的空间。
@@ -422,7 +422,7 @@ GPU上的线程主要有三种方式可以进行调度和组织。
 与CPU中线程分别一次次地分配给硬件线程不同，
 在GPU中，工作被批量分配给GPU核心。 
 该工作单元由线程块形式的多个warp组成。 
-在我们的基准GPU中，线程块以循环顺序分配给核心。 
+在基准GPU中，线程块以循环顺序分配给核心。 
 核心资源（如warp总数、寄存器文件大小和共享内存大小）以线程块的粒度分配。 
 由于与每个线程块相关联的大量状态，默认情况下线程块之间不会进行抢占操作，开销过大。
 线程块中的线程在将资源分配给另一个线程块之前运行完成。
